@@ -1,0 +1,41 @@
+version: "3.3"
+
+services:
+
+  social-network:
+    build: .
+    container_name: social-network
+    restart: always
+    environment:
+      FLASK_APP: app.py
+      ENV: ${ENV}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - "./logs:/usr/src/logs"
+      - "./app:/usr/src/app"
+      - "./tests:/usr/src/tests"
+    networks:
+      - shared
+    ports:
+      - 5000:8000
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    networks:
+      - shared
+    ports:
+      - 5306:3306
+
+networks:
+  shared:
+    driver: bridge

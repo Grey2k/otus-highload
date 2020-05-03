@@ -1,0 +1,8 @@
+Faker
+Flask
+Flask-Script
+PyMySQL
+Alembic
+gunicorn
+itsdangerous
+idna
