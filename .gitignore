@@ -9,3 +9,5 @@ instance/
 
 .env
 /logs
+/volumes
+/app/config.ini
