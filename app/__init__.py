@@ -3,7 +3,7 @@ import os
 
 from flask import Flask
 
-from app.db import db
+from app.database.db import db
 
 
 def create_app(env="production"):
