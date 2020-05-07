@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div>
+        <p> <strong>First name:</strong> <span>{{ profile.first_name }}</span> </p>
+        <p> <strong>Last name:</strong> <span>{{ profile.last_name }}</span> </p>
+        <p> <strong>Birth date:</strong> <span>{{ profile.birth_date.strftime('%Y-%m-%d') }}</span> </p>
+        <p> <strong>Gender:</strong> <span>{{ profile.gender }}</span> </p>
+        <p> <strong>Interests:</strong> <span>{{ profile.interests }}</span> </p>
+        <p> <strong>City:</strong> <span>{{ profile.city_id }}</span> </p>
+    </div>
+{% endblock %}
