@@ -24,7 +24,7 @@ class UserRepo:
     @classmethod
     def create(cls, email, password) -> User:
         with db.cursor() as cursor:
-            query = f'INSERT INTO `${cls.table_name}` (`email`, `password`) VALUES (%s, %s)'
+            query = f'INSERT INTO `{cls.table_name}` (`email`, `password`) VALUES (%s, %s)'
             cursor.execute(query, (email, password))
             return User(id=cursor.lastrowid, email=email, password=password)
 
@@ -34,7 +34,7 @@ class ProfileRepo:
 
     @classmethod
     def find_by_id(cls, profile_id: int):
-        query = f'SELECT * from `${cls.table_name}` WHERE id=%s'
+        query = f'SELECT * from `{cls.table_name}` WHERE id=%s'
         with db.cursor() as cursor:
             cursor.execute(query, [profile_id])
             if cursor.rowcount == 0:
@@ -48,7 +48,7 @@ class ProfileRepo:
 
     @classmethod
     def find_all(cls):
-        query = f'SELECT * from `${cls.table_name}`'
+        query = f'SELECT * from `{cls.table_name}`'
         with db.cursor() as cursor:
             cursor.execute(query)
             profiles = [Profile(**row) for row in cursor.fetchall()]
@@ -58,7 +58,7 @@ class ProfileRepo:
     @classmethod
     def create(cls, first_name, last_name, interests, birth_date, gender, city_id, user_id) -> Profile:
         query = f'''
-               INSERT INTO `${cls.table_name}`
+               INSERT INTO `{cls.table_name}`
                 (`first_name`, `last_name`, `interests`, `birth_date`, `gender`, `city_id`, `user_id`)
                VALUES
                 (%s, %s, %s, %s, %s, %s, %s)
