@@ -1,9 +1,10 @@
 import pymysql
 from flask import _app_ctx_stack
+from pymysql.cursors import Cursor
 
 
-class Db:
-    extension_name = 'flask_db'
+class Mysql:
+    extension_name = 'flask_mysql'
 
     def __init__(self, app=None):
         self.app = app
@@ -26,9 +27,20 @@ class Db:
         )
 
     def execute(self, sql, variables=None):
-        with self.connection.cursor() as cursor:
+        with self.cursor() as cursor:
             cursor.execute(sql, variables)
             self.connection.commit()
+
+    def query(self, sql, variables=None):
+        with self.cursor() as cursor:
+            cursor.execute(sql, variables)
+            return cursor
+
+    def cursor(self) -> Cursor:
+        return self.connection.cursor()
+
+    def commit(self):
+        self.connection.commit()
 
     def teardown(self, exception):
         ctx = _app_ctx_stack.top
