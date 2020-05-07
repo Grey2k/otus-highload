@@ -6,3 +6,4 @@ Alembic
 gunicorn
 itsdangerous
 idna
+wtforms[email]
