@@ -1,6 +1,10 @@
 import os
 
+from flask import render_template
+from werkzeug.exceptions import NotFound
+
 from app import create_app
+from app.database.repositories import ProfileRepo
 
 app = create_app(env=os.environ.get('ENV'))
 
@@ -10,9 +14,12 @@ def index():
     return 'hello world'
 
 
-@app.route('/<int:uid>')
-def person(uid: int):
-    return 'hello world'
+@app.route('/<profile_id>')
+def person(profile_id: int):
+    profile = ProfileRepo.find_by_id(profile_id)
+    if profile is None:
+        raise NotFound('Profile not found')
+    return render_template('profile.html', profile=profile)
 
 
 @app.route('/friends')
