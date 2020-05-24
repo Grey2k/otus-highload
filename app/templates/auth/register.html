@@ -2,18 +2,42 @@
 
 {% from "_forms.html" import render_field %}
 {% block content %}
-    <form method="post">
-        <div>
+<b-row>
+    <b-col lg="3"></b-col>
+    <b-col lg="6">
+        <h2>Register page</h2>
+        <br>
+        <form method="post">
             {{ render_field(form.email) }}
-            {{ render_field(form.first_name) }}
-            {{ render_field(form.last_name) }}
-            {{ render_field(form.interests) }}
-            {{ render_field(form.birth_date) }}
-            {{ render_field(form.gender) }}
+            <b-form-row>
+                <b-col>
+                    {{ render_field(form.password) }}
+                </b-col>
+                <b-col>
+                    {{ render_field(form.confirm) }}
+                </b-col>
+            </b-form-row>
+            <b-form-row>
+                <b-col>
+                    {{ render_field(form.first_name) }}
+                </b-col>
+                <b-col>
+                    {{ render_field(form.last_name) }}
+                </b-col>
+            </b-form-row>
+            <b-form-row>
+                <b-col>
+                    {{ render_field(form.birth_date) }}
+                </b-col>
+                <b-col>
+                    {{ render_field(form.gender) }}
+                </b-col>
+            </b-form-row>
             {{ render_field(form.city) }}
-            {{ render_field(form.password) }}
-            {{ render_field(form.confirm) }}
-        </div>
-        <p><input type="submit" value="Register/"></p>
-    </form>
+            {{ render_field(form.interests) }}
+            <b-button type="submit" variant="primary">Register</b-button>
+        </form>
+    </b-col>
+    <b-col lg="3"></b-col>
+</b-row>
 {% endblock %}

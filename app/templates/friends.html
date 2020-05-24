@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<b-tabs content-class="mt-3">
+    {% if friends: %}
+    <b-tab title="Friends">
+        <b-list-group flush>
+            {% for profile in friends %}
+            <b-list-group-item>
+                <b-link href="{{url_for('profile', profile_id=profile.id)}}">
+                    <b-card-title>{{ profile.first_name }} {{ profile.last_name }}</b-card-title>
+                </b-link>
+            </b-list-group-item>
+            {% endfor %}
+        </b-list-group>
+    </b-tab>
+    {% endif %}
+    {% if incoming_requests: %}
+    <b-tab title="Income requests">
+        <b-list-group flush>
+            {% for profile in incoming_requests %}
+            <b-list-group-item>
+                <b-link href="{{url_for('profile', profile_id=profile.id)}}">
+                    <b-card-title>{{ profile.first_name }} {{ profile.last_name }}</b-card-title>
+                </b-link>
+            </b-list-group-item>
+            {% endfor %}
+        </b-list-group>
+    </b-tab>
+    {% endif %}
+    {% if outgoing_requests: %}
+    <b-tab title="Send requests">
+        <b-list-group flush>
+            {% for profile in outgoing_requests %}
+            <b-list-group-item>
+                <b-link href="{{url_for('profile', profile_id=profile.id)}}">
+                    <b-card-title>{{ profile.first_name }} {{ profile.last_name }}</b-card-title>
+                </b-link>
+            </b-list-group-item>
+            {% endfor %}
+        </b-list-group>
+    </b-tab>
+    {% endif %}
+    {% if not (friends or outgoing_requests or incoming_requests): %}
+        <p>No information yet</p>
+    {% endif %}
+</b-tabs>
+
+
+{% endblock %}

@@ -1,13 +1,22 @@
 {% macro render_field(field) %}
-    <label>{{ field.label }}</label>
-    <div>
-        {% if field.errors %}
-            <ul class=errors>
-                {% for error in field.errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-        {{ field(**kwargs)|safe }}
-    </div>
+<b-form-group label="{{field.label.text}}" label-for="{{field.label.field_id}}">
+    {% if field.type == "TextAreaField": %}
+        <b-form-textarea
+            id="{{field.id}}"
+            name="{{field.name}}"
+            value="{{field.data}}"
+        ></b-form-textarea>
+    {% elif field.type == "SelectField": %}
+        {{ field(class_="custom-select", **kwargs)|safe }}
+    {% elif field.type == "DateField": %}
+        <input type="date" id="{{field.id}}" name="{{field.name}}" class="form-control" value="{{field.data}}">
+    {% else: %}
+        <b-form-input
+                id="{{field.id}}"
+                name="{{field.name}}"
+                type="{{field.widget.input_type}}"
+                required
+                value="{{field.data}}"></b-form-input>
+    {% endif %}
+</b-form-group>
 {% endmacro %}

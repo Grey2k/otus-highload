@@ -1,12 +1,28 @@
 {% extends "layout.html" %}
 
+{% block title %}
+    {{ profile.first_name }} {{ profile.last_name }}
+{% endblock %}
+
 {% block content %}
-    <div>
-        <p> <strong>First name:</strong> <span>{{ profile.first_name }}</span> </p>
-        <p> <strong>Last name:</strong> <span>{{ profile.last_name }}</span> </p>
-        <p> <strong>Birth date:</strong> <span>{{ profile.birth_date.strftime('%Y-%m-%d') }}</span> </p>
-        <p> <strong>Gender:</strong> <span>{{ profile.gender }}</span> </p>
-        <p> <strong>Interests:</strong> <span>{{ profile.interests }}</span> </p>
-        <p> <strong>City:</strong> <span>{{ profile.city_id }}</span> </p>
-    </div>
+<b-card>
+    <b-card-title>{{ profile.first_name }} {{ profile.last_name }}</b-card-title>
+    <b-card-text>
+        <p><strong>Birth date:</strong> <span>{{ profile.birth_date.strftime('%Y-%m-%d') }}</span></p>
+        <p><strong>Gender:</strong> <span>{{ profile.gender }}</span></p>
+        <p><strong>Interests:</strong> <span>{{ profile.interests }}</span></p>
+        <p><strong>City:</strong> <span>{{ city.name }}</span></p>
+    </b-card-text>
+    {% if g.profile.id != profile.id: %}
+        <v-friendship
+                friend="{{profile.id}}"
+                {% if friendship: %}
+                is_friends="{{ friendship.confirmed }}"
+                invite_sent="{{ friendship.wait_confirmation(g.profile.id) }}"
+                invite_received="{{ friendship.wait_confirmation(profile.id) }}"
+                {% endif %}
+        >
+        </v-friendship>
+    {% endif %}
+</b-card>
 {% endblock %}

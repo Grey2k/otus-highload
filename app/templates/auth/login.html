@@ -2,11 +2,19 @@
 
 {% from "_forms.html" import render_field %}
 {% block content %}
-    <form method="post">
-        <div>
+
+<b-row>
+    <b-col lg="3"></b-col>
+    <b-col lg="6">
+        <h2>Login page</h2>
+        <br>
+        <form method="post">
             {{ render_field(form.email) }}
             {{ render_field(form.password) }}
-        </div>
-        <p><input type="submit" value="Login"/></p>
-    </form>
+            <b-button type="submit" variant="primary">Login</b-button>
+        </form>
+    </b-col>
+    <b-col lg="3"></b-col>
+</b-row>
+
 {% endblock %}

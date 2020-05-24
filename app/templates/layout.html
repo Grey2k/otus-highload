@@ -2,10 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>
+        {% block title %} Vtentakle {% endblock %}
+    </title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/app.css')}}">
 </head>
 <body>
-{% block content %}
-{% endblock %}
+<div id="vapp">
+    <b-navbar toggleable="lg" type="dark" variant="primary" fixed="top">
+        <b-navbar-brand href="/">Vtentakle</b-navbar-brand>
+        <b-navbar-nav>
+            <b-nav-item href="{{url_for('friends')}}">Friends</b-nav-item>
+        </b-navbar-nav>
+        <b-navbar-nav class="ml-auto">
+            {% if g.user: %}
+            <b-nav-item href="{{url_for('profile', profile_id=g.user.id)}}">Profile</b-nav-item>
+            <b-nav-item href="{{url_for('auth.logout')}}">Logout</b-nav-item>
+            {% else: %}
+            <b-nav-item href="{{url_for('auth.login')}}">Login</b-nav-item>
+            <b-nav-item href="{{url_for('auth.register')}}">Register</b-nav-item>
+            {% endif %}
+        </b-navbar-nav>
+    </b-navbar>
+    <b-container fluid="md">
+        <b-row>
+            <b-col>
+                {% block content %}
+                {% endblock %}
+            </b-col>
+        </b-row>
+    </b-container>
+</div>
+<script src="{{ url_for('static', filename='build/js/chunk-vendors.js') }}"></script>
+<script src="{{ url_for('static', filename='build/js/app.js') }}"></script>
 </body>
 </html>
