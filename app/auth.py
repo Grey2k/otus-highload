@@ -54,6 +54,7 @@ def register():
 def load_logged_in_user():
     uid = session.get('uid')
     g.user = UserRepo.find_by_id(uid) if uid else None
+    g.profile = ProfileRepo.find_by_user_id(g.user.id) if g.user else None
 
 
 def auth_user(user: User):
