@@ -209,3 +209,32 @@ class FriendRepo:
             if cursor.rowcount == 0:
                 return None
             return Friendship(**cursor.fetchone())
+
+    @classmethod
+    def update(cls, friendship: Friendship):
+        query = f'''
+            UPDATE `{cls.table_name}`
+            SET status = %(status)s 
+            WHERE id = %(id)s
+        '''
+        with db.cursor() as cursor:
+            cursor.execute(query, {'id': friendship.id, 'status': friendship.status})
+            db.commit()
+
+    @classmethod
+    def create(cls, friendship: Friendship):
+        query = f'''
+            INSERT INTO `{cls.table_name}`
+            (`source_id`, `destination_id`, `status`) VALUES (%s, %s, %s)
+        '''
+        with db.cursor() as cursor:
+            cursor.execute(query, [friendship.source_id, friendship.destination_id, friendship.status])
+            db.commit()
+        return cursor.lastrowid
+
+    @classmethod
+    def remove(cls, friendship: Friendship):
+        query = f'DELETE from `{cls.table_name}` WHERE id = %s'
+        with db.cursor() as cursor:
+            cursor.execute(query, [friendship.id])
+            db.commit()

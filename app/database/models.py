@@ -30,11 +30,11 @@ class Profile:
 
 @dataclass
 class Friendship:
-    id: int
     source_id: int
     destination_id: int
     status: int
-    created_at: Date
+    id: int = None
+    created_at: Date = None
 
     @property
     def confirmed(self):

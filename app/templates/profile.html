@@ -18,8 +18,8 @@
                 friend="{{profile.id}}"
                 {% if friendship: %}
                 is_friends="{{ friendship.confirmed }}"
-                invite_sent="{{ friendship.wait_confirmation(g.profile.id) }}"
-                invite_received="{{ friendship.wait_confirmation(profile.id) }}"
+                invite_sent="{{ friendship.wait_confirmation(profile.id) }}"
+                invite_received="{{ friendship.wait_confirmation(g.profile.id) }}"
                 {% endif %}
         >
         </v-friendship>
