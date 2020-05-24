@@ -1,3 +1,5 @@
+import functools
+
 from flask import Blueprint, request, render_template, redirect, url_for, session, g
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms import Form, StringField, validators, PasswordField, TextAreaField, DateField, SelectField, ValidationError
@@ -88,3 +90,15 @@ class LoginForm(Form):
             raise ValidationError('E-mail or password incorrect')
         if not check_password_hash(user.password, form.password.data):
             raise ValidationError('E-mail or password incorrect')
+
+
+def login_required(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user is None:
+            return redirect(url_for('auth.login'))
+
+        return view(**kwargs)
+
+    return wrapped_view
+
