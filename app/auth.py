@@ -45,7 +45,7 @@ def register():
         )
         db.commit()
         auth_user(user)
-        return redirect(url_for('person', profile_id=profile.id))
+        return redirect(url_for('profile', profile_id=profile.id))
 
     return render_template('auth/register.html', form=form)
 
