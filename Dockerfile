@@ -12,6 +12,8 @@ RUN apt-get update && \
                        netcat && \
     apt-get clean
 
+RUN apt-get install -y npm
+
 WORKDIR /usr/src/
 
 ADD requirements.txt .

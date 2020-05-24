@@ -11,3 +11,4 @@ instance/
 /logs
 /volumes
 /app/config.ini
+/app/node_modules/
