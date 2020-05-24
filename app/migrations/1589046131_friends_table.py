@@ -4,17 +4,17 @@ def up(db):
         CREATE TABLE IF NOT EXISTS friends
             (
                 id bigint auto_increment,
-                user_id bigint not null,
-                friend_id bigint not null,
+                source_id bigint not null,
+                destination_id bigint not null,
                 status smallint not null,
                 created_at datetime not null default NOW(),
                 constraint friends_pk
                     primary key (id),
-                constraint profiles_users_id_fk
-                    foreign key (user_id) references users (id)
+                constraint profiles_source_id_fk
+                    foreign key (source_id) references profiles (id)
                         on delete cascade,
-                constraint profiles_users_id_fk_2
-                    foreign key (friend_id) references users (id)
+                constraint profiles_dest_id_fk_2
+                    foreign key (destination_id) references profiles (id)
                         on delete cascade
             )
         '''
