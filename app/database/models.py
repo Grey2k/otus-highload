@@ -1,23 +1,30 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 
 from pymysql import Date
 
 
 @dataclass
-class City:
+class Model:
+
+    def to_dict(self):
+        return asdict(self)
+
+
+@dataclass
+class City(Model):
     id: int
     name: str
 
 
 @dataclass
-class User:
+class User(Model):
     id: int
     email: str
     password: str
 
 
 @dataclass
-class Profile:
+class Profile(Model):
     id: int
     first_name: str
     last_name: str
@@ -29,7 +36,7 @@ class Profile:
 
 
 @dataclass
-class Friendship:
+class Friendship(Model):
     source_id: int
     destination_id: int
     status: int
