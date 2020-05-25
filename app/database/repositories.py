@@ -1,6 +1,6 @@
 from abc import ABC
 
-from app.database.models import User, City, Profile, Friendship
+from app.database.models import User, City, Profile, Friendship, Model
 from app.database.utils import Pagination, PaginatedCollection
 from app.ext.mysql import Mysql
 
@@ -37,6 +37,32 @@ class BaseRepo(ABC):
         sql = f'SELECT * FROM `{self.table_name}` where {attr}=%s'
         row = self.db.query(sql, (value,)).fetchone()
         return self.model_class(**row) if row else None
+
+    def save(self, entity: Model):
+        if not entity.id:
+            return self._add(entity)
+        return self._update(entity)
+
+    def _add(self, entity: Model):
+        data = {k: v for k, v in entity.to_dict().items() if v is not None}
+        keys = ','.join(map(lambda k: f'`{k}`', data.keys()))
+        values = ','.join(map(lambda k: f'%({k})s', data.keys()))
+        query = f'INSERT INTO `{self.table_name}` ({keys}) VALUES ({values})'
+        with self.db.cursor() as cursor:
+            cursor.execute(query, data)
+            self.db.commit()
+            entity.id = cursor.lastrowid
+        return entity
+
+    def _update(self, entity: Model):
+        data = entity.to_dict()
+        del data['id']
+        placeholders = ', '.join(map(lambda key: f'`{key}` = %({key})s', data.keys()))
+        query = f'UPDATE `{self.table_name}` SET {placeholders} WHERE id = %(id)s'
+        with self.db.cursor() as cursor:
+            cursor.execute(query, {'id': entity.id, **data})
+            self.db.commit()
+        return entity
 
     def remove(self, entity):
         query = f'DELETE from `{self.table_name}` WHERE id = %s'

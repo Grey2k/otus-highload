@@ -26,10 +26,9 @@ def add_friend(friend_repo: FriendRepo):
     friendship = friend_repo.find_friendship(me, friend_id)
     if friendship:
         friendship.status = 1
-        friend_repo.update(friendship)
     else:
         friendship = Friendship(source_id=me, destination_id=friend_id, status=0)
-        friend_repo.create(friendship)
+    friend_repo.save(friendship)
 
     return jsonify({
         'success': True,
