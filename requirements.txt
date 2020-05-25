@@ -1,8 +1,8 @@
 Faker
 Flask
 Flask-Script
+Flask-Injector
 PyMySQL
-Alembic
 gunicorn
 itsdangerous
 idna

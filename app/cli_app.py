@@ -6,7 +6,7 @@ from faker import Faker
 from flask.cli import AppGroup
 from werkzeug.security import generate_password_hash
 
-from app import create_app
+from app import create_app, di
 from app.database.db import db
 from app.database.repositories import CityRepo, UserRepo, ProfileRepo
 from app.ext.migrate import Migrate
@@ -15,24 +15,25 @@ app = create_app(env=os.environ.get('ENV'))
 migrate = Migrate(app, db)
 seed = AppGroup('seed', help='Seeding database')
 app.cli.add_command(seed)
+fake = Faker()
 
 
 @seed.command('cities')
 @click.argument('count')
 def seed_cities(count):
-    fake = Faker()
-
+    repo: CityRepo = di.get(CityRepo)
     for _ in range(int(count)):
-        CityRepo.add(fake.city())
+        repo.create(name=fake.city())
 
 
 @seed.command('users')
 @click.argument('count')
 def seed_users(count):
-    fake = Faker()
+    user_repo: UserRepo = di.get(UserRepo)
+    profile_repo: ProfileRepo = di.get(ProfileRepo)
     for _ in range(int(count)):
-        user = UserRepo.create(fake.free_email(), generate_password_hash(fake.password()))
-        ProfileRepo.create(
+        user = user_repo.create(fake.free_email(), generate_password_hash(fake.password()))
+        profile_repo.create(
             first_name=fake.first_name(),
             last_name=fake.last_name(),
             interests=fake.paragraph(),
@@ -42,4 +43,3 @@ def seed_users(count):
             user_id=user.id
         )
         db.commit()
-

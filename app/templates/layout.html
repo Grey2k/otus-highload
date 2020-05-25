@@ -12,11 +12,11 @@
     <b-navbar toggleable="lg" type="dark" variant="primary" fixed="top">
         <b-navbar-brand href="/">Vtentakle</b-navbar-brand>
         <b-navbar-nav>
-            <b-nav-item href="{{url_for('friends')}}">Friends</b-nav-item>
+            <b-nav-item href="{{url_for('friends.friends')}}">Friends</b-nav-item>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
             {% if g.user: %}
-            <b-nav-item href="{{url_for('profile', profile_id=g.user.id)}}">Profile</b-nav-item>
+            <b-nav-item href="{{url_for('main.profile', profile_id=g.user.id)}}">Profile</b-nav-item>
             <b-nav-item href="{{url_for('auth.logout')}}">Logout</b-nav-item>
             {% else: %}
             <b-nav-item href="{{url_for('auth.login')}}">Login</b-nav-item>

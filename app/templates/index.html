@@ -6,7 +6,7 @@
     {% for profile in profiles %}
     <b-list-group-item>
         <b-card>
-            <b-link href="{{url_for('profile', profile_id=profile.id)}}">
+            <b-link href="{{url_for('main.profile', profile_id=profile.id)}}">
                 <b-card-title>{{ profile.first_name }} {{ profile.last_name }}</b-card-title>
             </b-link>
             <b-card-sub-title>
@@ -23,7 +23,7 @@
                 last-number
                 first-number
                 number-of-pages="{{pagination.total_pages}}"
-                base-url="{{url_for('index', page='')}}"
+                base-url="{{url_for('main.index', page='')}}"
         ></b-pagination-nav>
     </b-list-group-item>
 </b-list-group>

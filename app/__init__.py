@@ -2,8 +2,10 @@ import configparser
 import os
 
 from flask import Flask
+from flask_injector import FlaskInjector
 
 from app.database.db import db
+from app.di import configure_di
 
 
 def create_app(env="production"):
@@ -11,6 +13,8 @@ def create_app(env="production"):
     init_config(app, env)
     db.init_app(app)
     init_routes(app)
+    injector = FlaskInjector(app=app, modules=[configure_di])
+    app.di = injector.injector
 
     return app
 
@@ -36,7 +40,9 @@ def __read_config_from_file(app, env):
 
 def init_routes(app):
     from . import auth
+    from . import main
+    from . import friends
 
     app.register_blueprint(auth.bp)
-
-
+    app.register_blueprint(main.bp)
+    app.register_blueprint(friends.bp)
