@@ -50,7 +50,6 @@ class BaseRepo(ABC):
         query = f'INSERT INTO `{self.table_name}` ({keys}) VALUES ({values})'
         with self.db.cursor() as cursor:
             cursor.execute(query, data)
-            self.db.commit()
             entity.id = cursor.lastrowid
         return entity
 
@@ -61,7 +60,6 @@ class BaseRepo(ABC):
         query = f'UPDATE `{self.table_name}` SET {placeholders} WHERE id = %(id)s'
         with self.db.cursor() as cursor:
             cursor.execute(query, {'id': entity.id, **data})
-            self.db.commit()
         return entity
 
     def remove(self, entity):
@@ -78,12 +76,6 @@ class UserRepo(BaseRepo):
     def find_by_email(self, email):
         return self._find_one_by_attribute('email', email)
 
-    def create(self, email, password) -> User:
-        with self.db.cursor() as cursor:
-            query = f'INSERT INTO `{self.table_name}` (`email`, `password`) VALUES (%s, %s)'
-            cursor.execute(query, (email, password))
-            return User(id=cursor.lastrowid, email=email, password=password)
-
 
 class ProfileRepo(BaseRepo):
     table_name = 'profiles'
@@ -92,30 +84,10 @@ class ProfileRepo(BaseRepo):
     def find_by_user_id(self, user_id: int):
         return self._find_one_by_attribute('user_id', user_id)
 
-    def create(self, first_name, last_name, interests, birth_date, gender, city_id, user_id) -> Profile:
-        query = f'''
-               INSERT INTO `{self.table_name}`
-                (`first_name`, `last_name`, `interests`, `birth_date`, `gender`, `city_id`, `user_id`)
-               VALUES
-                (%s, %s, %s, %s, %s, %s, %s)
-            '''
-        with self.db.cursor() as cursor:
-            cursor.execute(query, (first_name, last_name, interests, birth_date, gender, city_id, user_id))
-            return Profile(
-                id=cursor.lastrowid,
-                first_name=first_name, last_name=last_name,
-                interests=interests, birth_date=birth_date, gender=gender,
-                city_id=city_id, user_id=user_id
-            )
-
 
 class CityRepo(BaseRepo):
     table_name = 'cities'
     model_class = City
-
-    def create(self, name):
-        self.db.query(f'INSERT INTO `{self.table_name}` (`name`) VALUES (%s)', name)
-        self.db.commit()
 
     def find_by_ids(self, ids):
         if not ids:
@@ -182,23 +154,3 @@ class FriendRepo(BaseRepo):
             if cursor.rowcount == 0:
                 return None
             return Friendship(**cursor.fetchone())
-
-    def update(self, friendship: Friendship):
-        query = f'''
-            UPDATE `{self.table_name}`
-            SET status = %(status)s 
-            WHERE id = %(id)s
-        '''
-        with self.db.cursor() as cursor:
-            cursor.execute(query, {'id': friendship.id, 'status': friendship.status})
-            self.db.commit()
-
-    def create(self, friendship: Friendship):
-        query = f'''
-            INSERT INTO `{self.table_name}`
-            (`source_id`, `destination_id`, `status`) VALUES (%s, %s, %s)
-        '''
-        with self.db.cursor() as cursor:
-            cursor.execute(query, [friendship.source_id, friendship.destination_id, friendship.status])
-            self.db.commit()
-        return cursor.lastrowid

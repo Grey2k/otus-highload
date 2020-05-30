@@ -8,6 +8,7 @@ from werkzeug.security import generate_password_hash
 
 from app import create_app, di
 from app.database.db import db
+from app.database.models import User, Profile, City
 from app.database.repositories import CityRepo, UserRepo, ProfileRepo
 from app.ext.migrate import Migrate
 
@@ -23,7 +24,8 @@ fake = Faker()
 def seed_cities(count):
     repo: CityRepo = di.get(CityRepo)
     for _ in range(int(count)):
-        repo.create(name=fake.city())
+        repo.save(City(name=fake.city()))
+    db.commit()
 
 
 @seed.command('users')
@@ -32,8 +34,9 @@ def seed_users(count):
     user_repo: UserRepo = di.get(UserRepo)
     profile_repo: ProfileRepo = di.get(ProfileRepo)
     for _ in range(int(count)):
-        user = user_repo.create(fake.free_email(), generate_password_hash(fake.password()))
-        profile_repo.create(
+        user = User(email=fake.free_email(), password=generate_password_hash(fake.password()))
+        user_repo.save(user)
+        profile_repo.save(Profile(
             first_name=fake.first_name(),
             last_name=fake.last_name(),
             interests=fake.paragraph(),
@@ -41,5 +44,5 @@ def seed_users(count):
             gender=choice(['male', 'female']),
             city_id=randint(1, 10),
             user_id=user.id
-        )
+        ))
         db.commit()
