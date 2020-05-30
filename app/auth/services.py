@@ -37,9 +37,6 @@ class AuthManager:
         self.user_repo = user_repo
         self.profile_repo = profile_repo
 
-    def logout(self):
-        logout_user()
-
     def login(self, email, password):
         user: User = self.user_repo.find_by_email(email)
         if user is None:
@@ -47,4 +44,10 @@ class AuthManager:
         if not check_password_hash(user.password, password):
             raise LoginException('E-mail or password incorrect')
         user.profile = self.profile_repo.find_by_user_id(user.id)
+        self.login_user(user)
+
+    def login_user(self, user):
         login_user(user, remember=True)
+
+    def logout(self):
+        logout_user()

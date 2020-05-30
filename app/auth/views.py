@@ -1,5 +1,5 @@
 from flask import Blueprint, request, render_template, redirect, url_for
-from flask_login import current_user, login_user
+from flask_login import current_user
 
 from app.auth.exceptions import LoginException
 from app.auth.forms import LoginForm, RegistrationForm
@@ -33,7 +33,7 @@ def logout(auth_service: AuthManager):
 
 
 @bp.route('register', methods=('GET', 'POST'))
-def register(city_repo: CityRepo, user_registration: UserRegistration):
+def register(city_repo: CityRepo, user_registration: UserRegistration, auth_manager: AuthManager):
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
     form = RegistrationForm(request.form)
@@ -45,7 +45,7 @@ def register(city_repo: CityRepo, user_registration: UserRegistration):
             interests=form.interests.data, birth_date=form.birth_date.data, gender=form.gender.data,
             city_id=form.city.data,
         )
-        login_user(user, remember=True)
+        auth_manager.login_user(user)
         return redirect(url_for('main.profile', profile_id=user.profile.id))
 
     return render_template('auth/register.html', form=form)
