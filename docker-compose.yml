@@ -22,7 +22,7 @@ services:
     networks:
       - shared
     ports:
-      - 5000:8000
+      - ${SOCIAL_NETWORK_PUBLIC_PORT}:8000
   db:
     image: mysql
     command: --default-authentication-plugin=mysql_native_password
@@ -37,7 +37,7 @@ services:
     networks:
       - shared
     ports:
-      - 5306:3306
+      - ${DB_PUBLIC_PORT}:3306
 
 networks:
   shared:
