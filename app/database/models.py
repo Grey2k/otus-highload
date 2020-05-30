@@ -45,6 +45,11 @@ class User(UserMixin, Model):
         return f'{self.profile.first_name} {self.profile.last_name}'
 
 
+class FriendshipStatus:
+    WAITING = 0
+    CONFIRMED = 1
+
+
 @dataclass
 class Friendship(Model):
     source_id: int
@@ -55,7 +60,7 @@ class Friendship(Model):
 
     @property
     def confirmed(self):
-        return self.status == 1
+        return self.status == FriendshipStatus.CONFIRMED
 
     def wait_confirmation(self, profile_id):
-        return self.destination_id == profile_id and self.status == 0
+        return self.destination_id == profile_id and self.status == FriendshipStatus.WAITING

@@ -1,6 +1,6 @@
 from abc import ABC
 
-from app.database.models import User, City, Profile, Friendship, Model
+from app.database.models import User, City, Profile, Friendship, Model, FriendshipStatus
 from app.database.utils import Pagination, PaginatedCollection
 from app.ext.mysql import Mysql
 
@@ -114,7 +114,7 @@ class FriendRepo(BaseRepo):
                 SELECT source_id from `{self.table_name}` WHERE destination_id = %(profile_id)s and status = %(status)s
             )'''
         with self.db.cursor() as cursor:
-            cursor.execute(query, {'profile_id': profile_id, 'status': 1})
+            cursor.execute(query, {'profile_id': profile_id, 'status': FriendshipStatus.CONFIRMED})
             profiles = [Profile(**row) for row in cursor.fetchall()]
 
         return profiles
@@ -123,10 +123,10 @@ class FriendRepo(BaseRepo):
         query = f'''
             SELECT p.* from `{self.table_name}` as f
             LEFT JOIN `{self.profile_table_name}` as p on p.id = f.source_id
-            WHERE f.destination_id = %s and f.status = 0
+            WHERE f.destination_id = %s and f.status = %s
         '''
         with self.db.cursor() as cursor:
-            cursor.execute(query, [profile_id])
+            cursor.execute(query, [profile_id, FriendshipStatus.WAITING])
             profiles = [Profile(**row) for row in cursor.fetchall()]
 
         return profiles
@@ -135,10 +135,10 @@ class FriendRepo(BaseRepo):
         query = f'''
            SELECT p.* from `{self.table_name}` as f
            LEFT JOIN `{self.profile_table_name}` as p on p.id = f.destination_id
-           WHERE f.source_id = %s and f.status = 0
+           WHERE f.source_id = %s and f.status = %s
         '''
         with self.db.cursor() as cursor:
-            cursor.execute(query, [profile_id])
+            cursor.execute(query, [profile_id, FriendshipStatus.WAITING])
             profiles = [Profile(**row) for row in cursor.fetchall()]
 
         return profiles

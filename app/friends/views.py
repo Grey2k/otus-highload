@@ -1,7 +1,7 @@
 from flask import render_template, request, jsonify, Blueprint
 from flask_login import login_required, current_user
 
-from app.database.models import Friendship, User
+from app.database.models import Friendship, User, FriendshipStatus
 from app.database.repositories import FriendRepo
 
 bp = Blueprint('friends', __name__, url_prefix='/friends')
@@ -26,9 +26,9 @@ def add_friend(friend_repo: FriendRepo):
     friend_id = request.form.get('friend_id', type=int)
     friendship = friend_repo.find_friendship(me, friend_id)
     if friendship:
-        friendship.status = 1
+        friendship.status = FriendshipStatus.CONFIRMED
     else:
-        friendship = Friendship(source_id=me, destination_id=friend_id, status=0)
+        friendship = Friendship(source_id=me, destination_id=friend_id, status=FriendshipStatus.WAITING)
     friend_repo.save(friendship)
     friend_repo.db.commit()
 
