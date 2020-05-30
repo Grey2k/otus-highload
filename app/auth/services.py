@@ -3,7 +3,7 @@ from injector import inject
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.auth.exceptions import LoginException
-from app.database.db import db
+from app.database.db import db, transactional
 from app.database.models import User, Profile
 from app.database.repositories import UserRepo, ProfileRepo
 
@@ -16,17 +16,16 @@ class UserRegistration:
         self.profile_repo = profile_repo
         self.db = db
 
+    @transactional
     def register(self, **kwargs):
-        user = User(email=kwargs['email'], password=generate_password_hash(kwargs['password']))
-        self.user_repo.save(user)
-        profile = Profile(
+        user = self.user_repo.save(User(
+            email=kwargs['email'], password=generate_password_hash(kwargs['password'])
+        ))
+        user.profile = self.profile_repo.save(Profile(
             first_name=kwargs['first_name'], last_name=kwargs['last_name'],
             interests=kwargs['interests'], birth_date=kwargs['birth_date'], gender=kwargs['gender'],
             city_id=kwargs['city_id'], user_id=user.id
-        )
-        self.profile_repo.save(profile)
-        self.db.commit()
-        user.profile = profile
+        ))
         return user
 
 
