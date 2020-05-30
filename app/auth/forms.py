@@ -1,4 +1,3 @@
-from werkzeug.security import check_password_hash
 from wtforms import Form, StringField, validators, PasswordField, TextAreaField, DateField, SelectField, ValidationError
 
 from app import di
@@ -29,12 +28,3 @@ class RegistrationForm(Form):
 class LoginForm(Form):
     email = StringField('E-mail')
     password = PasswordField('Password')
-
-    def validate_email(form, field):
-        # todo: Исправить
-        user_repo: UserRepo = di.get(UserRepo)
-        user = user_repo.find_by_email(field.data)
-        if user is None:
-            raise ValidationError('E-mail or password incorrect')
-        if not check_password_hash(user.password, form.password.data):
-            raise ValidationError('E-mail or password incorrect')

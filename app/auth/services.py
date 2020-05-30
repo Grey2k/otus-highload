@@ -1,6 +1,8 @@
+from flask_login import logout_user, login_user
 from injector import inject
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
+from app.auth.exceptions import LoginException
 from app.database.db import db
 from app.database.models import User, Profile
 from app.database.repositories import UserRepo, ProfileRepo
@@ -26,3 +28,23 @@ class UserRegistration:
         self.db.commit()
         user.profile = profile
         return user
+
+
+class AuthManager:
+
+    @inject
+    def __init__(self, user_repo: UserRepo, profile_repo: ProfileRepo):
+        self.user_repo = user_repo
+        self.profile_repo = profile_repo
+
+    def logout(self):
+        logout_user()
+
+    def login(self, email, password):
+        user: User = self.user_repo.find_by_email(email)
+        if user is None:
+            raise LoginException('E-mail or password incorrect')
+        if not check_password_hash(user.password, password):
+            raise LoginException('E-mail or password incorrect')
+        user.profile = self.profile_repo.find_by_user_id(user.id)
+        login_user(user, remember=True)

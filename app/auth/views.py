@@ -1,29 +1,34 @@
 from flask import Blueprint, request, render_template, redirect, url_for
-from flask_login import logout_user, current_user, login_user
+from flask_login import current_user, login_user
 
+from app.auth.exceptions import LoginException
 from app.auth.forms import LoginForm, RegistrationForm
-from app.auth.services import UserRegistration
-from app.database.repositories import CityRepo, UserRepo
+from app.auth.services import UserRegistration, AuthManager
+from app.database.repositories import CityRepo
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 
 @bp.route('login', methods=('GET', 'POST'))
-def login(user_repo: UserRepo):
+def login(auth: AuthManager):
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
     form = LoginForm(request.form)
     if request.method == 'POST' and form.validate():
-        user = user_repo.find_by_email(form.email.data)
-        login_user(user, remember=True)
+        try:
+            auth.login(form.email.data, form.password.data)
+        except LoginException as e:
+            form.email.errors.append(str(e))
+            return render_template('auth/login.html', form=form)
+
         return redirect(url_for('main.index'))
 
     return render_template('auth/login.html', form=form)
 
 
 @bp.route('logout')
-def logout():
-    logout_user()
+def logout(auth_service: AuthManager):
+    auth_service.logout()
     return redirect(url_for('auth.login'))
 
 
