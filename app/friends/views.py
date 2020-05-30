@@ -1,8 +1,9 @@
 from flask import render_template, request, jsonify, Blueprint
 from flask_login import login_required, current_user
 
-from app.database.models import Friendship, User, FriendshipStatus
+from app.database.models import User
 from app.database.repositories import FriendRepo
+from app.friends.services import FriendshipManager
 
 bp = Blueprint('friends', __name__, url_prefix='/friends')
 
@@ -21,17 +22,8 @@ def friends(friend_repo: FriendRepo):
 
 @bp.route('add', methods=['POST'])
 @login_required
-def add_friend(friend_repo: FriendRepo):
-    me = current_user.profile_id
-    friend_id = request.form.get('friend_id', type=int)
-    friendship = friend_repo.find_friendship(me, friend_id)
-    if friendship:
-        friendship.status = FriendshipStatus.CONFIRMED
-    else:
-        friendship = Friendship(source_id=me, destination_id=friend_id, status=FriendshipStatus.WAITING)
-    friend_repo.save(friendship)
-    friend_repo.db.commit()
-
+def add_friend(friendship_manager: FriendshipManager):
+    friendship_manager.start_friendship(current_user.profile_id, request.form.get('friend_id', type=int))
     return jsonify({
         'success': True,
     })
@@ -39,12 +31,8 @@ def add_friend(friend_repo: FriendRepo):
 
 @bp.route('delete', methods=['POST'])
 @login_required
-def delete_friend(friend_repo: FriendRepo):
-    me = current_user.profile_id
-    friend_id = request.form.get('friend_id', type=int)
-    friendship = friend_repo.find_friendship(me, friend_id)
-    if friendship:
-        friend_repo.remove(friendship)
+def delete_friend(friendship_manager: FriendshipManager):
+    friendship_manager.stop_friendship(current_user.profile_id, request.form.get('friend_id', type=int))
     return jsonify({
         'success': True
     })
