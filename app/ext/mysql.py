@@ -34,8 +34,14 @@ class Mysql:
     def cursor(self) -> Cursor:
         return self.connection.cursor()
 
+    def begin_transaction(self):
+        self.connection.begin()
+
     def commit(self):
         self.connection.commit()
+
+    def rollback(self):
+        self.connection.rollback()
 
     def teardown(self, exception):
         ctx = _app_ctx_stack.top
