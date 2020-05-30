@@ -18,5 +18,12 @@
                 required
                 value="{{field.data}}"></b-form-input>
     {% endif %}
+    {% if field.errors %}
+        <div class="invalid-feedback" style="display: block">
+            {% for error in field.errors %}
+                {{ error }}
+            {% endfor %}
+        </div>
+    {% endif %}
 </b-form-group>
 {% endmacro %}
