@@ -3,8 +3,10 @@ import os
 
 from flask import Flask
 from flask_injector import FlaskInjector
+from flask_login import LoginManager
 
 from app.database.db import db
+from app.database.repositories import UserRepo, ProfileRepo
 from app.di import configure_di
 
 
@@ -15,6 +17,17 @@ def create_app(env="production"):
     init_routes(app)
     injector = FlaskInjector(app=app, modules=[configure_di])
     app.di = injector.injector
+    login_manager = LoginManager(app)
+    login_manager.login_view = 'auth.login'
+
+    @login_manager.user_loader
+    def load_user(id):
+        user_repo = app.di.get(UserRepo)
+        profile_repo = app.di.get(ProfileRepo)
+        user = user_repo.find_by_id(id) if id else None
+        if user:
+            user.profile = profile_repo.find_by_user_id(user.id)
+        return user
 
     return app
 

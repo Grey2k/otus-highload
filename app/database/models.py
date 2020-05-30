@@ -1,5 +1,6 @@
 from dataclasses import dataclass, asdict
 
+from flask_login import UserMixin
 from pymysql import Date
 
 
@@ -12,20 +13,12 @@ class Model:
 
 @dataclass
 class City(Model):
-    id: int
     name: str
-
-
-@dataclass
-class User(Model):
-    id: int
-    email: str
-    password: str
+    id: int = None
 
 
 @dataclass
 class Profile(Model):
-    id: int
     first_name: str
     last_name: str
     interests: str
@@ -33,6 +26,23 @@ class Profile(Model):
     gender: str
     city_id: int
     user_id: int
+    id: int = None
+
+
+@dataclass
+class User(UserMixin, Model):
+    email: str
+    password: str
+    id: int = None
+    profile: Profile = None
+
+    @property
+    def profile_id(self):
+        return self.profile.id if self.profile else None
+
+    @property
+    def name(self):
+        return f'{self.profile.first_name} {self.profile.last_name}'
 
 
 @dataclass

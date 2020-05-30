@@ -13,13 +13,13 @@
         <p><strong>Interests:</strong> <span>{{ profile.interests }}</span></p>
         <p><strong>City:</strong> <span>{{ city.name }}</span></p>
     </b-card-text>
-    {% if g.profile.id != profile.id: %}
+    {% if current_user.profile_id != profile.id: %}
         <v-friendship
                 friend="{{profile.id}}"
                 {% if friendship: %}
                 is_friends="{{ friendship.confirmed }}"
                 invite_sent="{{ friendship.wait_confirmation(profile.id) }}"
-                invite_received="{{ friendship.wait_confirmation(g.profile.id) }}"
+                invite_received="{{ friendship.wait_confirmation(current_user.profile_id) }}"
                 {% endif %}
         >
         </v-friendship>

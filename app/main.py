@@ -1,7 +1,7 @@
-from flask import render_template, request, g, Blueprint
+from flask import render_template, request, Blueprint
+from flask_login import login_required, current_user
 from werkzeug.exceptions import NotFound
 
-from app.auth import login_required
 from app.database.repositories import ProfileRepo, CityRepo, FriendRepo
 
 bp = Blueprint('main', __name__, url_prefix='/')
@@ -31,5 +31,5 @@ def profile(profile_id: int, city_repo: CityRepo, profile_repo: ProfileRepo, fri
         'profile.html',
         profile=p,
         city=city_repo.find_by_id(p.city_id),
-        friendship=friend_repo.find_friendship(p.id, g.profile.id) if p.id != g.profile.id else None
+        friendship=friend_repo.find_friendship(p.id, current_user.profile_id) if p.id != current_user.profile_id else None
     )
