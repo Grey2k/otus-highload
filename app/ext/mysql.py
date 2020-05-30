@@ -26,11 +26,6 @@ class Mysql:
             cursorclass=pymysql.cursors.DictCursor
         )
 
-    def execute(self, sql, variables=None):
-        with self.cursor() as cursor:
-            cursor.execute(sql, variables)
-            self.connection.commit()
-
     def query(self, sql, variables=None):
         with self.cursor() as cursor:
             cursor.execute(sql, variables)
