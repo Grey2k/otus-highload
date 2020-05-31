@@ -63,7 +63,7 @@ class _MigrateFolder:
         self.__change_work_dir()
         extension = ".py"
         mask = "*.py"
-        return list(map(lambda x: x.replace(extension, ""), glob.glob(mask)))
+        return list(sorted(map(lambda x: x.replace(extension, ""), glob.glob(mask))))
 
     def create_file(self, name, content):
         self.__check_folder_exists()
