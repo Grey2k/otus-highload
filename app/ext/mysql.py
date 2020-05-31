@@ -22,7 +22,7 @@ class Mysql:
             database=self.app.config.get('DB_DATABASE'),
             user=self.app.config.get('DB_USER', 'usr'),
             password=self.app.config.get('DB_PASSWORD', 'password'),
-            charset=self.app.config.get('DB_CHARSET', 'utt8mb4'),
+            charset=self.app.config.get('DB_CHARSET', 'utf8mb4'),
             cursorclass=pymysql.cursors.DictCursor
         )
 
