@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from random import choice, randint
 
 import click
@@ -33,8 +34,10 @@ def seed_cities(count):
 def seed_users(count):
     user_repo: UserRepo = di.get(UserRepo)
     profile_repo: ProfileRepo = di.get(ProfileRepo)
-    for _ in range(int(count)):
-        user = User(email=fake.free_email(), password=generate_password_hash(fake.password()))
+    count = int(count)
+    time = datetime.now().strftime('%d%m%y%H%M%S')
+    for _ in range(count):
+        user = User(email=f"{count}@{time}.com", password=generate_password_hash(fake.password()))
         user_repo.save(user)
         profile_repo.save(Profile(
             first_name=fake.first_name(),
