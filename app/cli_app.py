@@ -36,7 +36,7 @@ def seed_users(count):
     profile_repo: ProfileRepo = di.get(ProfileRepo)
     count = int(count)
     time = datetime.now().strftime('%d%m%y%H%M%S')
-    with click.progressbar(length=count, show_percent=True, show_eta=True) as bar:
+    with click.progressbar(length=count, show_percent=True, show_eta=True, show_pos=True) as bar:
         for idx in bar:
             user = User(email=f"{idx}@{time}.com", password=generate_password_hash(fake.password()))
             user_repo.save(user)
