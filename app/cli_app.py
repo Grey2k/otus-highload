@@ -36,16 +36,17 @@ def seed_users(count):
     profile_repo: ProfileRepo = di.get(ProfileRepo)
     count = int(count)
     time = datetime.now().strftime('%d%m%y%H%M%S')
-    for _ in range(count):
-        user = User(email=f"{count}@{time}.com", password=generate_password_hash(fake.password()))
-        user_repo.save(user)
-        profile_repo.save(Profile(
-            first_name=fake.first_name(),
-            last_name=fake.last_name(),
-            interests=fake.paragraph(),
-            birth_date=fake.date_of_birth().strftime('%Y-%m-%d'),
-            gender=choice(['male', 'female']),
-            city_id=randint(1, 10),
-            user_id=user.id
-        ))
-        db.commit()
+    with click.progressbar(length=count, show_percent=True, show_eta=True) as bar:
+        for idx in bar:
+            user = User(email=f"{idx}@{time}.com", password=generate_password_hash(fake.password()))
+            user_repo.save(user)
+            profile_repo.save(Profile(
+                first_name=fake.first_name(),
+                last_name=fake.last_name(),
+                interests=fake.paragraph(),
+                birth_date=fake.date_of_birth().strftime('%Y-%m-%d'),
+                gender=choice(['male', 'female']),
+                city_id=randint(1, 10),
+                user_id=user.id
+            ))
+            db.commit()
