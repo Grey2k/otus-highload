@@ -2,7 +2,7 @@ from flask import render_template, request, Blueprint
 from flask_login import login_required, current_user
 from werkzeug.exceptions import NotFound
 
-from app.database.repositories import ProfileRepo, CityRepo, FriendRepo
+from app.database.repositories import ProfileRepo, CityRepo, FriendRepo, Spec
 
 bp = Blueprint('main', __name__, url_prefix='/')
 
@@ -31,5 +31,27 @@ def profile(profile_id: int, city_repo: CityRepo, profile_repo: ProfileRepo, fri
         'profile.html',
         profile=p,
         city=city_repo.find_by_id(p.city_id),
-        friendship=friend_repo.find_friendship(p.id, current_user.profile_id) if p.id != current_user.profile_id else None
+        friendship=friend_repo.find_friendship(p.id,
+                                               current_user.profile_id) if p.id != current_user.profile_id else None
+    )
+
+
+@bp.route('/search')
+@login_required
+def search(city_repo: CityRepo, profile_repo: ProfileRepo):
+    page = request.args.get('page', default=1, type=int)
+    first_name = request.args.get('first_name', type=str, default='')
+    last_name = request.args.get('last_name', type=str, default='')
+    spec = Spec()
+    if first_name:
+        spec.where('first_name like %(first_name)s', {'first_name': first_name + '%'})
+    if last_name:
+        spec.where('last_name like %(last_name)s', {'last_name': last_name + '%'})
+    collection = profile_repo.find_by_spec(spec, page)
+    cities = city_repo.find_by_ids({p.city_id for p in collection.items}) if collection.items else []
+    return render_template(
+        'search.html',
+        profiles=collection.items,
+        pagination=collection.pagination,
+        cities=cities
     )

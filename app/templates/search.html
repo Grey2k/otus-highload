@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<b-list-group flush>
+    {% for profile in profiles %}
+    <b-list-group-item>
+        <b-card>
+            <b-link href="{{url_for('main.profile', profile_id=profile.id)}}">
+                <b-card-title>{{ profile.first_name }} {{ profile.last_name }}</b-card-title>
+            </b-link>
+            <b-card-sub-title>
+                <span>{{ cities[profile.city_id].name }}</span>, <span>{{ profile.gender }}</span>
+            </b-card-sub-title>
+            <b-card-text>
+                {{ profile.interests }}
+            </b-card-text>
+        </b-card>
+    </b-list-group-item>
+    {% endfor %}
+    <b-list-group-item>
+        <b-pagination-nav
+                last-number
+                first-number
+                number-of-pages="{{pagination.total_pages}}"
+                base-url="{{url_for('main.index', page='')}}"
+        ></b-pagination-nav>
+    </b-list-group-item>
+</b-list-group>
+
+{% endblock %}
