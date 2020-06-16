@@ -5,6 +5,27 @@ from app.database.utils import Pagination, PaginatedCollection
 from app.ext.mysql import Mysql
 
 
+class Spec:
+
+    def __init__(self):
+        self.attributes = {}
+        self.conditions = []
+
+    def where(self, condition: str, attributes: dict = None, operator: str = 'AND'):
+        if attributes:
+            self.attributes.update(attributes)
+        if not self.conditions:
+            operator = ''
+        self.conditions.append((condition, operator))
+        return self
+
+    def __str__(self):
+        if not self.conditions:
+            return ''
+        where = ' '.join([f'{operator} {cond}' for cond, operator in self.conditions]).strip()
+        return f'WHERE {where}'
+
+
 class BaseRepo(ABC):
     table_name = None
     model_class = None
@@ -27,6 +48,20 @@ class BaseRepo(ABC):
             cursor.execute(query, ((page - 1) * count, count))
             items = [self.model_class(**row) for row in cursor.fetchall()]
             pagination = Pagination(current_page=page, items_per_page=count, total_items=cursor.execute(count_query))
+
+        return PaginatedCollection(items=items, pagination=pagination)
+
+    def find_by_spec(self, spec: Spec, page=1, count=10):
+        query = f'SELECT * from `{self.table_name}` {spec} limit %(offset)s, %(limit)s'
+        count_query = f'SELECT * from `{self.table_name}` {spec}'
+        with self.db.cursor() as cursor:
+            cursor.execute(query, {'offset': (page - 1) * count, 'limit': count, **spec.attributes})
+            items = [self.model_class(**row) for row in cursor.fetchall()]
+            pagination = Pagination(
+                current_page=page,
+                items_per_page=count,
+                total_items=cursor.execute(count_query, {**spec.attributes})
+            )
 
         return PaginatedCollection(items=items, pagination=pagination)
 
