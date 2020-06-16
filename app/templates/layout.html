@@ -14,6 +14,13 @@
         <b-navbar-nav>
             <b-nav-item href="{{url_for('friends.friends')}}">Friends</b-nav-item>
         </b-navbar-nav>
+        {% if current_user.is_authenticated: %}
+            <b-navbar-nav class="ml-auto">
+                 <b-nav-item>
+                    {% include "search-bar.html" %}
+                </b-nav-item>
+            </b-navbar-nav>
+        {% endif %}
         <b-navbar-nav class="ml-auto">
             {% if current_user.is_authenticated: %}
             <b-nav-item href="{{url_for('main.profile', profile_id=current_user.profile_id)}}">{{current_user.name}}</b-nav-item>
