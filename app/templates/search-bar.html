@@ -1,0 +1,11 @@
+<b-form action="{{url_for('main.search')}}" name="search">
+    <b-input-group>
+
+        <b-form-input size="sm" class="mr-3" name="first_name" value="{{ request.args.get('first_name', default='')}}"></b-form-input>
+        <b-form-input size="sm" class="mr-3" name="last_name" value="{{ request.args.get('last_name', default='')}}"></b-form-input>
+
+        <b-button type="submit" variant="primary" size="sm">
+            <b-icon-search aria-hidden="true"></b-icon-search>
+        </b-button>
+    </b-input-group>
+</b-form>
