@@ -43,11 +43,13 @@ class BaseRepo(ABC):
 
     def find_paginate(self, page=1, count=10) -> PaginatedCollection:
         query = f'SELECT * from `{self.table_name}` limit %s, %s'
-        count_query = f'SELECT * from `{self.table_name}`'
+        count_query = f'SELECT count(1) as cnt from `{self.table_name}`'
         with self.db.cursor() as cursor:
             cursor.execute(query, ((page - 1) * count, count))
             items = [self.model_class(**row) for row in cursor.fetchall()]
-            pagination = Pagination(current_page=page, items_per_page=count, total_items=cursor.execute(count_query))
+            cursor.execute(count_query)
+            cnt = cursor.fetchone()
+            pagination = Pagination(current_page=page, items_per_page=count, total_items=cnt['cnt'])
 
         return PaginatedCollection(items=items, pagination=pagination)
 
