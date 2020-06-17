@@ -47,11 +47,11 @@ def search(city_repo: CityRepo, profile_repo: ProfileRepo):
         spec.where('first_name like %(first_name)s', {'first_name': first_name + '%'})
     if last_name:
         spec.where('last_name like %(last_name)s', {'last_name': last_name + '%'})
-    collection = profile_repo.find_by_spec(spec, page)
+    collection = profile_repo.find_by_spec(spec, page, count=30)
     cities = city_repo.find_by_ids({p.city_id for p in collection.items}) if collection.items else []
     return render_template(
         'search.html',
         profiles=collection.items,
         pagination=collection.pagination,
-        cities=cities
+        cities=cities,
     )
