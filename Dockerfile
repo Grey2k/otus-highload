@@ -22,4 +22,4 @@ RUN pip install -r requirements.txt
 
 ADD . .
 
-CMD /usr/local/bin/gunicorn -w 2 -b :8000 app.app:app --reload
+CMD /usr/local/bin/gunicorn -w 3 -k eventlet -b :8000 app.app:app --reload
