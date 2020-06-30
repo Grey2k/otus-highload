@@ -8,12 +8,13 @@ from flask.cli import AppGroup
 from werkzeug.security import generate_password_hash
 
 from app import create_app, di
-from app.database.db import db
+from app.database.db import pool
 from app.database.models import User, Profile, City
 from app.database.repositories import CityRepo, UserRepo, ProfileRepo
 from app.ext.migrate import Migrate
 
 app = create_app(env=os.environ.get('ENV'))
+db = pool.master
 migrate = Migrate(app, db)
 seed = AppGroup('seed', help='Seeding database')
 app.cli.add_command(seed)

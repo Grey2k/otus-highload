@@ -1,28 +1,42 @@
+from random import choice
+
 import pymysql
 from flask import _app_ctx_stack
 from pymysql.cursors import Cursor
 
 
 class Mysql:
-    extension_name = 'flask_mysql'
+    __instance = 0
 
-    def __init__(self, app=None):
+    def __init__(self, app=None, config=None):
         self.app = app
+        self.config = config
+        self.__instance = self.__new_instance()
         if app is not None:
-            self.init_app(app)
+            self.init_app(app, config)
 
-    def init_app(self, app):
+    def init_app(self, app, config):
         self.app = app
         self.app.teardown_appcontext(self.teardown)
+        self.config = config
+
+    @property
+    def extension_name(self):
+        return f'flask_mysql_{self.__instance}'
+
+    @classmethod
+    def __new_instance(cls):
+        cls.__instance += 1
+        return cls.__instance
 
     def connect(self):
         return pymysql.connect(
-            host=self.app.config.get('DB_HOST', 'localhost'),
-            port=int(self.app.config.get('DB_PORT', 3306)),
-            database=self.app.config.get('DB_DATABASE'),
-            user=self.app.config.get('DB_USER', 'usr'),
-            password=self.app.config.get('DB_PASSWORD', 'password'),
-            charset=self.app.config.get('DB_CHARSET', 'utf8mb4'),
+            host=self.config.get('host'),
+            port=self.config.get('port'),
+            database=self.config.get('database'),
+            user=self.config.get('user'),
+            password=self.config.get('password'),
+            charset=self.config.get('charset'),
             cursorclass=pymysql.cursors.DictCursor
         )
 
@@ -55,3 +69,28 @@ class Mysql:
             if not hasattr(ctx, self.extension_name):
                 setattr(ctx, self.extension_name, self.connect())
             return getattr(ctx, self.extension_name)
+
+
+class MysqlPool:
+
+    def __init__(self, master: Mysql = None):
+        self._master = master
+        self._slaves = []
+
+    def set_master(self, master: Mysql):
+        self._master = master
+
+    def add_slave(self, slave: Mysql):
+        self._slaves.append(slave)
+
+    @property
+    def master(self) -> Mysql:
+        if not self._master:
+            raise RuntimeError('Master not configured')
+        return self._master
+
+    @property
+    def slave(self) -> Mysql:
+        if not self._slaves:
+            return self._master
+        return choice(self._slaves)

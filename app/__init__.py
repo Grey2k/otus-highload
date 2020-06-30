@@ -5,7 +5,7 @@ from flask import Flask
 from flask_injector import FlaskInjector
 
 from app.auth import login_manager
-from app.database.db import db
+from app.database.db import pool, init_db
 from app.database.repositories import UserRepo, ProfileRepo
 from app.di import configure_di
 
@@ -13,7 +13,7 @@ from app.di import configure_di
 def create_app(env="production"):
     app = Flask(__name__)
     init_config(app, env)
-    db.init_app(app)
+    init_db(app)
     init_routes(app)
     injector = FlaskInjector(app=app, modules=[configure_di])
     app.di = injector.injector
