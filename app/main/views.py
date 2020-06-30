@@ -31,8 +31,8 @@ def profile(profile_id: int, city_repo: CityRepo, profile_repo: ProfileRepo, fri
         'profile.html',
         profile=p,
         city=city_repo.find_by_id(p.city_id),
-        friendship=friend_repo.find_friendship(p.id,
-                                               current_user.profile_id) if p.id != current_user.profile_id else None
+        friendship=friend_repo.find_friendship(
+            p.id, current_user.profile_id) if p.id != current_user.profile_id else None
     )
 
 
