@@ -1,0 +1,7 @@
+[mysqld]
+server-id = 2
+log-bin = mysql-bin.log
+relay-log = relay-bin
+relay-log-info-file = relay-log.info
+relay-log-index = relay-log.index
+binlog-do-db = soc_net
