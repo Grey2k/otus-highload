@@ -19,7 +19,23 @@ services:
       - shared
     ports:
       - ${SLAVE_PUBLIC_PORT}:3306
-
+  slave2:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    volumes:
+      - "./volumes/slave2:/var/lib/mysql"
+      - "./volumes/slave_dump:/dump"
+      - "./conf/mysql/slave2.cnf:/etc/mysql/conf.d/my.cnf"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    networks:
+      - shared
+    ports:
+      - ${SLAVE2_PUBLIC_PORT}:3306
 networks:
   shared:
     driver: bridge
