@@ -1,5 +1,10 @@
 [mysqld]
 server-id = 2
+rpl_semi_sync_slave_enabled = 1
+binlog_format = row
+gtid-mode = ON
+enforce-gtid-consistency = true
+log-slave-updates = true
 log-bin = mysql-bin.log
 relay-log = relay-bin
 relay-log-info-file = relay-log.info
