@@ -1,5 +1,6 @@
 [mysqld]
 server-id = 3
+log_slave_updates = 1
 rpl_semi_sync_slave_enabled = 1
 binlog_format = row
 gtid-mode = ON
