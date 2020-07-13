@@ -20,12 +20,11 @@ class UserRegistration:
         user = self.user_repo.save(User(
             email=kwargs['email'], password=generate_password_hash(kwargs['password'])
         ))
-        with self.profile_repo.policy.with_(self.profile_repo.policy.USE_MASTER):
-            user.profile = self.profile_repo.save(Profile(
-                first_name=kwargs['first_name'], last_name=kwargs['last_name'],
-                interests=kwargs['interests'], birth_date=kwargs['birth_date'], gender=kwargs['gender'],
-                city_id=kwargs['city_id'], user_id=user.id
-            ))
+        user.profile = self.profile_repo.save(Profile(
+            first_name=kwargs['first_name'], last_name=kwargs['last_name'],
+            interests=kwargs['interests'], birth_date=kwargs['birth_date'], gender=kwargs['gender'],
+            city_id=kwargs['city_id'], user_id=user.id
+        ))
         return user
 
 

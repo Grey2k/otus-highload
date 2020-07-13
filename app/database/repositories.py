@@ -1,5 +1,4 @@
 from abc import ABC
-from contextlib import contextmanager
 
 from app.database.models import User, City, Profile, Friendship, Model, FriendshipStatus
 from app.database.utils import Pagination, PaginatedCollection
@@ -11,18 +10,12 @@ class PoolPolicy:
     USE_SLAVE = 10
 
     def __init__(self, pool: MysqlPool, policy):
-        self.__pool = pool
+        self.pool = pool
         self.__policy = policy
 
     @property
     def db(self):
-        return self.__pool.master if self.__policy == self.USE_MASTER else self.__pool.slave
-
-    @contextmanager
-    def with_(self, policy):
-        original_policy, self.__policy = self.__policy, policy
-        yield
-        self.__policy = original_policy
+        return self.pool.master if self.__policy == self.USE_MASTER else self.pool.slave
 
 
 class Spec:
@@ -50,12 +43,15 @@ class BaseRepo(ABC):
     table_name = None
     model_class = None
 
-    def __init__(self, pool: MysqlPool):
-        self.policy = PoolPolicy(pool, PoolPolicy.USE_MASTER)
+    def __init__(self, pool: MysqlPool, policy=PoolPolicy.USE_MASTER):
+        self.policy = PoolPolicy(pool, policy)
 
     @property
     def db(self):
         return self.policy.db
+
+    def use_slave(self):
+        return self.__class__(self.policy.pool, PoolPolicy.USE_SLAVE)
 
     def find_all(self):
         query = f'SELECT * from `{self.table_name}`'
@@ -155,18 +151,10 @@ class ProfileRepo(BaseRepo):
     def find_by_user_id(self, user_id: int):
         return self._find_one_by_attribute('user_id', user_id)
 
-    def find_paginate(self, page=1, count=10) -> PaginatedCollection:
-        with self.policy.with_(PoolPolicy.USE_SLAVE):
-            return super().find_paginate(page, count)
-
 
 class CityRepo(BaseRepo):
     table_name = 'cities'
     model_class = City
-
-    def find_by_ids(self, ids):
-        with self.policy.with_(PoolPolicy.USE_SLAVE):
-            return super().find_by_ids(ids)
 
 
 class FriendRepo(BaseRepo):
