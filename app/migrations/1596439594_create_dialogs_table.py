@@ -10,6 +10,7 @@ def up(db):
                 sender_id bigint not null,
                 recipient_id bigint not null,
                 created_at datetime not null default NOW(),
+                message text,
                 updated_at datetime,
                 constraint dialogs_pk
                     primary key (id),
