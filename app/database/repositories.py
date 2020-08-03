@@ -1,6 +1,6 @@
 from abc import ABC
 
-from app.database.models import User, City, Profile, Friendship, Model, FriendshipStatus
+from app.database.models import User, City, Profile, Friendship, Model, FriendshipStatus, Dialog
 from app.database.utils import Pagination, PaginatedCollection
 from app.ext.mysql import MysqlPool
 
@@ -211,3 +211,20 @@ class FriendRepo(BaseRepo):
             if cursor.rowcount == 0:
                 return None
             return Friendship(**cursor.fetchone())
+
+
+class DialogsRepo(BaseRepo):
+    table_name = 'dialogs'
+    model_class = Dialog
+
+    def find_messages(self, profile_one, profile_two):
+        query = f'''
+           SELECT * from `{self.table_name}`
+           WHERE (sender_id = %(one)s and recipient_id = %(two)s) 
+              or (sender_id = %(two)s and recipient_id = %(one)s)
+        '''
+        with self.db.cursor() as cursor:
+            cursor.execute(query, {'one': profile_one, 'two': profile_two})
+            if cursor.rowcount == 0:
+                return []
+            return [self.model_class(**row) for row in cursor.fetchall()]

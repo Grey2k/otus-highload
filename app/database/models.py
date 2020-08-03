@@ -64,3 +64,13 @@ class Friendship(Model):
 
     def wait_confirmation(self, profile_id):
         return self.destination_id == profile_id and self.status == FriendshipStatus.WAITING
+
+
+@dataclass
+class Dialog(Model):
+    sender_id: int
+    recipient_id: int
+    message: str
+    id: int = None
+    created_at: Date = None
+    updated_at: Date = None
