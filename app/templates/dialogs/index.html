@@ -6,7 +6,7 @@
     {% for dialog in dialogs %}
         <b-list-group-item>
             <b-link href="{{url_for('dialogs.detail', dialog_id=dialog.id)}}">
-                {{ dialog.name }}
+                {{ dialog.name(current_user.profile_id) }}
             </b-link>
         </b-list-group-item>
     {% endfor %}

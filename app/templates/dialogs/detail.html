@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="chat">
-    <h3 class="chat-title">{{dialog.name}}</h3>
+    <h3 class="chat-title">{{dialog.name(current_user.profile_id)}}</h3>
     <div class="msg_history">
         {% for message in messages %}
             <div class="{% if current_user.profile_id == message.sender_id %}outgoing_msg{% else %}incoming_msg{%endif%}">

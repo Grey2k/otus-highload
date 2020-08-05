@@ -23,6 +23,10 @@
                 {% endif %}
         >
         </v-friendship>
+        <br>
+        <b-button class="mr-1" variant="info" href="{{url_for('dialogs.direct', profile_id=profile.id)}}">
+            Send message
+        </b-button>
     {% endif %}
 </b-card>
 {% endblock %}
