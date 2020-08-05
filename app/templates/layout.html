@@ -13,6 +13,7 @@
         <b-navbar-brand href="/">Vtentakle</b-navbar-brand>
         <b-navbar-nav>
             <b-nav-item href="{{url_for('friends.friends')}}">Friends</b-nav-item>
+            <b-nav-item href="{{url_for('dialogs.index')}}">Dialogs</b-nav-item>
         </b-navbar-nav>
         {% if current_user.is_authenticated: %}
             <b-navbar-nav class="ml-auto">

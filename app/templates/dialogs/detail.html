@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="chat">
+    <h3 class="chat-title">{{dialog.name}}</h3>
+    <div class="msg_history">
+        {% for message in messages %}
+            <div class="{% if current_user.profile_id == message.sender_id %}outgoing_msg{% else %}incoming_msg{%endif%}">
+                <div class="msg">
+                    <p>{{message.text}}</p>
+                    <span class="time_date">{{message.created_at|datetime}}</span>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="type_msg">
+        <form method="post">
+            <div class="input_msg_write">
+                <b-input type="text" required class="write_msg" name="{{form.message.name}}" placeholder="Type a message"></b-input>
+                <button class="msg_send_btn" type="submit"><b-icon icon="arrow-return-right" variant="primary"></b-icon></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

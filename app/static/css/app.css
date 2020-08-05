@@ -1,3 +1,88 @@
 body {
     padding-top: 60px;
 }
+
+.chat {
+    padding: 30px 15px 0 25px;
+    width: 80%;
+}
+.chat .chat-title {
+    margin-bottom: 40px;
+}
+
+.msg_history {
+    height: 446px;
+    overflow-y: auto;
+}
+
+.chat .time_date {
+    color: #747474;
+    display: block;
+    font-size: 12px;
+    margin: 8px 0 0;
+}
+
+.incoming_msg .msg{
+    display: inline-block;
+    padding: 0 0 0 10px;
+    vertical-align: top;
+    width: 57%;
+}
+
+.incoming_msg .msg p {
+    background: #ebebeb none repeat scroll 0 0;
+    border-radius: 3px;
+    color: #646464;
+    font-size: 14px;
+    margin: 0;
+    padding: 5px 10px 5px 12px;
+    width: 100%;
+}
+
+.outgoing_msg .msg, .incoming_msg .msg {
+    margin-bottom: 15px;
+}
+.outgoing_msg .msg{
+    overflow: hidden;
+    float: right;
+    clear: both;
+    width: 46%;
+}
+
+.outgoing_msg .msg p {
+    background: #05728f none repeat scroll 0 0;
+    border-radius: 3px;
+    font-size: 14px;
+    margin: 0;
+    color: #fff;
+    padding: 5px 10px 5px 12px;
+    width: 100%;
+}
+
+
+.input_msg_write input {
+    background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+    border: medium none;
+    color: #4c4c4c;
+    font-size: 15px;
+    min-height: 48px;
+    width: 100%;
+}
+
+.type_msg {
+    border-top: 1px solid #c4c4c4;
+    position: relative;
+}
+
+.msg_send_btn {
+    border: medium none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 17px;
+    height: 33px;
+    position: absolute;
+    right: 0;
+    top: 11px;
+    width: 33px;
+}
+
