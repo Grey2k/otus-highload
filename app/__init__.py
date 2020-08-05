@@ -1,5 +1,6 @@
 import configparser
 import os
+from datetime import datetime
 
 from flask import Flask
 from flask_injector import FlaskInjector
@@ -18,6 +19,7 @@ def create_app(env="production"):
     injector = FlaskInjector(app=app, modules=[configure_di])
     app.di = injector.injector
     login_manager.init_app(app)
+    init_template_filters(app)
     return app
 
 
@@ -48,3 +50,10 @@ def init_routes(app):
     app.register_blueprint(auth.bp)
     app.register_blueprint(main.bp)
     app.register_blueprint(friends.bp)
+    app.register_blueprint(dialogs.bp)
+
+
+def init_template_filters(app):
+    @app.template_filter('datetime')
+    def filter_datetime(dt: datetime):
+        return dt.strftime('%d.%m.%Y %H:%M')
