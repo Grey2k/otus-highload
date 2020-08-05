@@ -1,4 +1,5 @@
 from dataclasses import dataclass, asdict
+from typing import List
 
 from flask_login import UserMixin
 from pymysql import Date
@@ -28,6 +29,10 @@ class Profile(Model):
     user_id: int
     id: int = None
 
+    @property
+    def name(self):
+        return f'{self.first_name} {self.last_name}'
+
 
 @dataclass
 class User(UserMixin, Model):
@@ -42,7 +47,7 @@ class User(UserMixin, Model):
 
     @property
     def name(self):
-        return f'{self.profile.first_name} {self.profile.last_name}'
+        return f'{self.profile.name}'
 
 
 class FriendshipStatus:
@@ -66,11 +71,37 @@ class Friendship(Model):
         return self.destination_id == profile_id and self.status == FriendshipStatus.WAITING
 
 
+class DialogType:
+    DIRECT = 1
+
+
 @dataclass
 class Dialog(Model):
-    sender_id: int
-    recipient_id: int
-    message: str
+    created_by: int
+    type: int = DialogType.DIRECT
     id: int = None
     created_at: Date = None
-    updated_at: Date = None
+    participants: List[Profile] = None
+
+    def name(self, skip_profile=None):
+        if not self.participants:
+            return 'Empty dialog'
+        participants = self.participants
+        if skip_profile:
+            participants = filter(lambda p: p.id != skip_profile, participants)
+        return ', '.join(map(lambda p: p.name, participants))
+
+
+@dataclass
+class DialogMessage(Model):
+    text: str
+    sender_id: int
+    dialog_id: int
+    id: int = None
+    created_at: Date = None
+
+
+@dataclass
+class DialogParticipant(Model):
+    profile_id: int
+    dialog_id: int
