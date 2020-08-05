@@ -46,6 +46,7 @@ def init_routes(app):
     from . import auth
     from . import main
     from . import friends
+    from . import dialogs
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(main.bp)
