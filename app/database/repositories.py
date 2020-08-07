@@ -271,16 +271,6 @@ class DialogsRepo(BaseRepo):
 
             return dialogs
 
-    def find_messages(self, dialog_id):
-        query = f'''
-           SELECT * from `dialogs_messages`
-           WHERE dialog_id = %(dialog_id)s
-           ORDER BY id ASC
-        '''
-        with self.db.cursor() as cursor:
-            cursor.execute(query, {'dialog_id': dialog_id})
-            return [DialogMessage(**row) for row in cursor.fetchall()]
-
 
 class DialogMessagesRepo(BaseRepo):
     table_name = 'dialogs_messages'
