@@ -10,3 +10,4 @@ idna
 wtforms[email]
 eventlet
 gunicorn[eventlet]
+tarantool

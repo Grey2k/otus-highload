@@ -75,19 +75,20 @@ services:
       - shared
     ports:
       - ${SLAVE2_PUBLIC_PORT}:3306
-#  netdata:
-#    image: netdata/netdata
-#    hostname: localhost
-#    ports:
-#      - 19999:19999
-#    cap_add:
-#      - SYS_PTRACE
-#    security_opt:
-#      - apparmor:unconfined
-#    volumes:
-#      - /proc:/host/proc:ro
-#      - /sys:/host/sys:ro
-#      - /var/run/docker.sock:/var/run/docker.sock:ro
+  tarantool:
+    image: tarantool/tarantool
+    container_name: tarantool
+    volumes:
+      - "./volumes/tarantool:/var/lib/tarantool"
+      - "./conf/tarantool:/opt/tarantool"
+    environment:
+      TARANTOOL_USER_NAME: ${TARANTOOL_USER_NAME}
+      TARANTOOL_USER_PASSWORD: ${TARANTOOL_USER_PASSWORD}
+    networks:
+      - shared
+  tarantool-mysql-replicator:
+    build: ./conf/mysql-tarantool
+    container_name: tarantool-mysql-replicator
 
 networks:
   shared:
