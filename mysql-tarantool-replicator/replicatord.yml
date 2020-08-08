@@ -14,7 +14,7 @@ tarantool:
 
 mappings:
    - database: soc_net
-     table: cities
+     table: profiles
      columns: [ id, name]
      space: 513
      key_fields:  [0]
