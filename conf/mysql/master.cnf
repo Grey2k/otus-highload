@@ -1,4 +1,5 @@
 [mysqld]
+skip_ssl
 server-id = 1
 rpl_semi_sync_master_enabled = 1
 binlog_format = row
