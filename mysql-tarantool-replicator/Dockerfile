@@ -54,4 +54,4 @@ FROM centos
 COPY --from=0 mysql_tarantool-replication/replicatord ./replicator/replicatord
 COPY replicatord.yml ./replicator/replicatord.yml
 
-CMD ./replicator/replicatord -c ./replicator/replicatord.yml
+CMD sleep 20 && ./replicator/replicatord -c ./replicator/replicatord.yml
