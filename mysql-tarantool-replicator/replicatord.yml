@@ -15,7 +15,7 @@ tarantool:
 mappings:
    - database: soc_net
      table: profiles
-     columns: [ id, name]
+     columns: [ id, first_name, last_name, interests, birth_date, gender, city_id]
      space: 513
      key_fields:  [0]
      # insert_call: function_name
