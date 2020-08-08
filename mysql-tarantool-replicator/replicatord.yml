@@ -1,0 +1,23 @@
+mysql:
+   host: db
+   port: 3306
+   user: slave_user
+   password: password
+   connect_retry: 15 # seconds
+
+tarantool:
+   host: taran:tool@tarantool:3301
+   binlog_pos_space: 512
+   binlog_pos_key: 0
+   connect_retry: 15 # seconds
+   sync_retry: 1000 # milliseconds
+
+mappings:
+   - database: soc_net
+     table: cities
+     columns: [ id, name]
+     space: 513
+     key_fields:  [0]
+     # insert_call: function_name
+     # update_call: function_name
+     # delete_call: function_name

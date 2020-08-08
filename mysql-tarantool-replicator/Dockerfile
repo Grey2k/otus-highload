@@ -37,11 +37,9 @@ RUN set -x \
         boost-devel
 
 RUN yum localinstall -y https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm
-
-RUN yum install -y \
+RUN yum --enablerepo=mysql80-community --disablerepo=mysql57-community install -y \
         mysql-community-client \
         mysql-community-devel
-
 
 RUN git clone https://github.com/tarantool/mysql-tarantool-replication.git mysql_tarantool-replication
 
@@ -52,8 +50,8 @@ RUN cd mysql_tarantool-replication \
     && cmake . \
     && make
 
-##
-## Copy replicatord binary to new image to minimize size
-##
 FROM centos
-COPY --from=0 mysql_tarantool-replication/replicatord .
+COPY --from=0 mysql_tarantool-replication/replicatord ./replicator/replicatord
+COPY replicatord.yml ./replicator/replicatord.yml
+
+CMD ./replicator/replicatord -c ./replicator/replicatord.yml
