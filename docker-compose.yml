@@ -86,9 +86,6 @@ services:
       TARANTOOL_USER_PASSWORD: ${TARANTOOL_USER_PASSWORD}
     networks:
       - shared
-  tarantool-mysql-replicator:
-    build: ./conf/mysql-tarantool
-    container_name: tarantool-mysql-replicator
 
 networks:
   shared:
