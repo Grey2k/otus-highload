@@ -16,6 +16,10 @@ services:
       DB_USER: ${MYSQL_USER}
       DB_PASSWORD: ${MYSQL_PASSWORD}
       DB_DATABASE: ${MYSQL_DATABASE}
+      TARANTOOL_HOST: ${TARANTOOL_HOST}
+      TARANTOOL_PORT: ${TARANTOOL_PORT}
+      TARANTOOL_USER_NAME: ${TARANTOOL_USER_NAME}
+      TARANTOOL_USER_PASSWORD: ${TARANTOOL_USER_PASSWORD}
     volumes:
       - "./logs:/usr/src/logs"
       - "./app:/usr/src/app"
