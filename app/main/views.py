@@ -3,16 +3,17 @@ from flask_login import login_required, current_user
 from werkzeug.exceptions import NotFound
 
 from app.database.repositories import ProfileRepo, CityRepo, FriendRepo, Spec
+from app.tarantool.repositories import TarantoolProfilesRepo
 
 bp = Blueprint('main', __name__, url_prefix='/')
 
 
 @bp.route('/')
 @login_required
-def index(city_repo: CityRepo, profile_repo: ProfileRepo):
+def index(city_repo: CityRepo, profile_repo: TarantoolProfilesRepo):
     page = request.args.get('page', default=1, type=int)
-    collection = profile_repo.use_slave().find_paginate(page, count=30)
-    cities = city_repo.use_slave().find_by_ids({p.city_id for p in collection.items})
+    collection = profile_repo.find_paginate(page, count=10)
+    cities = city_repo.find_by_ids({p.city_id for p in collection.items})
     return render_template(
         'index.html',
         profiles=collection.items,
