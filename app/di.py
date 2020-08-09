@@ -4,6 +4,8 @@ from injector import singleton
 from app.database.db import pool
 from app.database.repositories import CityRepo, UserRepo, ProfileRepo, FriendRepo, DialogsRepo, DialogMessagesRepo, \
     DialogParticipantsRepo
+from app.tarantool.repositories import TarantoolProfilesRepo
+from app.tarantool.tarantool import tarantool
 
 
 def configure_di(binder):
@@ -14,6 +16,7 @@ def configure_di(binder):
     binder.bind(DialogsRepo, to=DialogsRepo(pool), scope=singleton)
     binder.bind(DialogMessagesRepo, to=DialogMessagesRepo(pool), scope=singleton)
     binder.bind(DialogParticipantsRepo, to=DialogParticipantsRepo(pool), scope=singleton)
+    binder.bind(TarantoolProfilesRepo, to=TarantoolProfilesRepo(tarantool), scope=singleton)
 
 
 def get(service):
