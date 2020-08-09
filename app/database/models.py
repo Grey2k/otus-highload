@@ -26,7 +26,7 @@ class Profile(Model):
     birth_date: Date
     gender: str
     city_id: int
-    user_id: int
+    user_id: int = None
     id: int = None
 
     @property
