@@ -13,7 +13,7 @@ bp = Blueprint('main', __name__, url_prefix='/')
 def index(city_repo: CityRepo, profile_repo: TarantoolProfilesRepo):
     page = request.args.get('page', default=1, type=int)
     collection = profile_repo.find_paginate(page, count=30)
-    cities = city_repo.find_by_ids({p.city_id for p in collection.items})
+    cities = city_repo.use_slave().find_by_ids({p.city_id for p in collection.items})
     return render_template(
         'index.html',
         profiles=collection.items,
