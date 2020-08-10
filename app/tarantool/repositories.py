@@ -24,3 +24,10 @@ class TarantoolProfilesRepo:
         items = [self.__to_model(row) for row in rows]
         pagination = Pagination(current_page=page, items_per_page=count, total_items=cnt)
         return PaginatedCollection(items=items, pagination=pagination)
+
+    def search(self, first_name, last_name, page, count):
+        result = self.space.call('search_profiles', [first_name, last_name, page, count]).data[0]
+        cnt = result.get('cnt', 0)
+        items = [self.__to_model(row) for row in result.get('items', [])]
+        pagination = Pagination(current_page=page, items_per_page=count, total_items=cnt)
+        return PaginatedCollection(items=items, pagination=pagination)
