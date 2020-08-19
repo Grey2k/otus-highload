@@ -49,11 +49,13 @@ def init_routes(app):
     from . import main
     from . import friends
     from . import dialogs
+    from . import feed
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(main.bp)
     app.register_blueprint(friends.bp)
     app.register_blueprint(dialogs.bp)
+    app.register_blueprint(feed.bp)
 
 
 def init_template_filters(app):
