@@ -105,3 +105,12 @@ class DialogMessage(Model):
 class DialogParticipant(Model):
     profile_id: int
     dialog_id: int
+
+
+@dataclass
+class Post(Model):
+    author_id: int
+    content: str
+    id: int = None
+    created_at: Date = None
+    updated_at: Date = None
