@@ -30,7 +30,12 @@ def add(posts_repo: PostsRepo):
             'success': False,
             'errors': form.errors
         })
-    post = posts_repo.save(Post(author_id=current_user.profile_id, content=form.content.data))
+
+    posts_repo.save(Post(author_id=current_user.profile_id, content=form.content.data))
     posts_repo.db.commit()
-    return redirect(url_for('feed.detail', post_id=post.id))
+
+    return jsonify({
+        'success': True,
+        'redirect': url_for('feed.index')
+    })
 
