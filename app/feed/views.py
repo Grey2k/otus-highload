@@ -12,7 +12,7 @@ bp = Blueprint('feed', __name__, url_prefix='/feed')
 @login_required
 def index(posts_repo: PostsRepo):
     page = request.args.get('page', default=1, type=int)
-    collection = posts_repo.find_paginate(page, count=10)
+    collection = posts_repo.find_paginate(page, count=10, order='desc')
     return render_template(
         'feed/index.html',
         pagination=collection.pagination,
