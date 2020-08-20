@@ -63,8 +63,8 @@ class BaseRepo(ABC):
 
         return items
 
-    def find_paginate(self, page=1, count=10) -> PaginatedCollection:
-        query = f'SELECT * from `{self.table_name}` limit %s, %s'
+    def find_paginate(self, page=1, count=10, sort='id', order='asc') -> PaginatedCollection:
+        query = f'SELECT * from `{self.table_name}` ORDER BY {sort} {order} limit %s, %s'
         count_query = f'SELECT count(1) as cnt from `{self.table_name}`'
         with self.db.cursor() as cursor:
             cursor.execute(query, ((page - 1) * count, count))
