@@ -114,6 +114,7 @@ class Post(Model):
     id: int = None
     created_at: Date = None
     updated_at: Date = None
+    author: Profile = None
 
 
 @dataclass

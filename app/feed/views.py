@@ -2,10 +2,8 @@ from flask import render_template, request, Blueprint, url_for, jsonify
 from flask_login import login_required, current_user
 from injector import inject
 
-from app.database.models import Post
-from app.database.repositories import PostsRepo
 from app.feed.forms import PostAddForm
-from app.feed.services import FeedService
+from app.feed.services import FeedService, PostService
 
 bp = Blueprint('feed', __name__, url_prefix='/feed')
 
@@ -26,7 +24,8 @@ def index(feed: FeedService):
 
 @bp.route('/', methods=['POST'])
 @login_required
-def add(posts_repo: PostsRepo):
+@inject
+def add(post_service: PostService):
     form = PostAddForm(request.form)
     if not form.validate():
         return jsonify({
@@ -34,8 +33,7 @@ def add(posts_repo: PostsRepo):
             'errors': form.errors
         })
 
-    posts_repo.save(Post(author_id=current_user.profile_id, content=form.content.data))
-    posts_repo.db.commit()
+    post_service.create(current_user.profile, form.content.data)
 
     return jsonify({
         'success': True,

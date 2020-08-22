@@ -2,12 +2,16 @@ from abc import ABC, abstractmethod
 
 from tarantool.const import ITERATOR_REQ
 
-from app.database.models import FeedItem
+from app.database.models import FeedItem, Post
 from app.database.utils import Pagination, PaginatedCollection
 from app.ext.tarantool import Tarantool
 
 
 class FeedProvider(ABC):
+
+    @abstractmethod
+    def add(self, feed_id, post: Post):
+        pass
 
     @abstractmethod
     def load(self, feed_id, page, count) -> PaginatedCollection:
@@ -26,6 +30,12 @@ class TarantoolFeedProvider(FeedProvider):
     @property
     def space(self):
         return self.db.space(self.space_name)
+
+    def add(self, feed_id, post: Post):
+        self.space.insert([
+            post.id, feed_id, post.author.name,
+            post.author_id, post.content, post.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        ])
 
     def load(self, feed_id, page, count) -> PaginatedCollection:
         cnt = self.space.call(f'box.space.{self.space_name}.index.{self.index_name}:count', feed_id).data[0]
