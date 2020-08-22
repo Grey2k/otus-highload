@@ -113,7 +113,7 @@ class BaseRepo(ABC):
         return self._update(entity)
 
     def _add(self, entity: Model):
-        data = {k: v for k, v in entity.to_dict().items() if v is not None}
+        data = {k: v for k, v in entity.to_dict().items() if v is not None and not isinstance(v, dict)}
         keys = ','.join(map(lambda k: f'`{k}`', data.keys()))
         values = ','.join(map(lambda k: f'%({k})s', data.keys()))
         query = f'INSERT INTO `{self.table_name}` ({keys}) VALUES ({values})'
@@ -124,7 +124,7 @@ class BaseRepo(ABC):
         return entity
 
     def _update(self, entity: Model):
-        data = entity.to_dict()
+        data = {k: v for k, v in entity.to_dict().items() if not isinstance(v, dict)}
         del data['id']
         placeholders = ', '.join(map(lambda key: f'`{key}` = %({key})s', data.keys()))
         query = f'UPDATE `{self.table_name}` SET {placeholders} WHERE id = %(id)s'
