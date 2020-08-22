@@ -114,3 +114,13 @@ class Post(Model):
     id: int = None
     created_at: Date = None
     updated_at: Date = None
+
+
+@dataclass
+class FeedItem(Model):
+    feed_id: int
+    author: str
+    author_id: int
+    content: str
+    id: int = None
+    publish_date: Date = None
