@@ -14,3 +14,6 @@ class FlaskCelery:
         celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
         celery.conf.update(app.config)
         self.celery = celery
+
+    def task(self, *args, **opts):
+        return self.celery.task(*args, **opts)
