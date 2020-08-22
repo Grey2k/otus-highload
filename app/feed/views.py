@@ -1,19 +1,21 @@
 from flask import render_template, request, Blueprint, url_for, jsonify
 from flask_login import login_required, current_user
+from injector import inject
 
 from app.database.models import Post
 from app.database.repositories import PostsRepo
 from app.feed.forms import PostAddForm
-from app.tarantool.repositories import TarantoolFeedRepo
+from app.feed.services import FeedService
 
 bp = Blueprint('feed', __name__, url_prefix='/feed')
 
 
 @bp.route('/')
 @login_required
-def index(feed_repo: TarantoolFeedRepo):
+@inject
+def index(feed: FeedService):
     page = request.args.get('page', default=1, type=int)
-    collection = feed_repo.find_paginate(feed_id=3, page=page, count=10)
+    collection = feed.load(feed_id=current_user.profile_id, page=page, count=10)
     return render_template(
         'feed/index.html',
         pagination=collection.pagination,
