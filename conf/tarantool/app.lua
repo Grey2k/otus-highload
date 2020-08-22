@@ -17,3 +17,14 @@ function search_profiles(first_name, last_name, page, cnt)
 
     return {cnt=box.execute(cnt_sql).rows[1][1], items=box.execute(sql).rows}
 end
+
+function cleanup_feed_cache(feed_id, max_items)
+    local total_items = box.space.feed.index.feed_id:count(feed_id)
+    if max_items >= total_items then
+        return
+    end
+    local limit = total_items - max_items
+    for _, item in pairs(box.space.feed.index.feed_id:select(feed_id, { iterator = 'EQ', limit = limit })) do
+        box.space.feed:delete(item[1])
+    end
+end
