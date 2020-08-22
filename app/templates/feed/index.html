@@ -2,26 +2,28 @@
 
 {% block content %}
 
-  <v-post-form submit-url="{{ url_for('feed.add') }}"></v-post-form>
+<v-post-form submit-url="{{ url_for('feed.add') }}"></v-post-form>
 
-  <b-list-group flush>
+<b-list-group flush>
     {% for post in posts %}
-      <b-list-group-item>
+    <b-list-group-item>
         <h4>{{ post.author }} </h4>
         <div>{{ post.publish_date }}</div>
         <div>
-          {{ post.content }}
+            {{ post.content }}
         </div>
-      </b-list-group-item>
+    </b-list-group-item>
     {% endfor %}
     <b-list-group-item>
-      <b-pagination-nav
-          last-number
-          first-number
-          number-of-pages="{{ pagination.total_pages }}"
-          base-url="{{ url_for('feed.index', page='') }}"
-      ></b-pagination-nav>
+        {% if pagination.total_pages > 1 %}
+        <b-pagination-nav
+                last-number
+                first-number
+                number-of-pages="{{ pagination.total_pages }}"
+                base-url="{{ url_for('feed.index', page='') }}"
+        ></b-pagination-nav>
+        {% endif %}
     </b-list-group-item>
-  </b-list-group>
+</b-list-group>
 
 {% endblock %}
