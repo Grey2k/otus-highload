@@ -6,6 +6,7 @@ from flask import Flask
 from flask_injector import FlaskInjector
 
 from app.auth import login_manager
+from app.celery import celery
 from app.database.db import pool, init_db
 from app.database.repositories import UserRepo, ProfileRepo
 from app.di import configure_di
@@ -17,11 +18,14 @@ def create_app(env="production"):
     init_config(app, env)
     init_db(app)
     init_tarantool(app)
+    celery.init_app(app)
     init_routes(app)
     injector = FlaskInjector(app=app, modules=[configure_di])
     app.di = injector.injector
     login_manager.init_app(app)
     init_template_filters(app)
+    init_tasks()
+
     return app
 
 
@@ -62,3 +66,7 @@ def init_template_filters(app):
     @app.template_filter('datetime')
     def filter_datetime(dt: datetime):
         return dt.strftime('%d.%m.%Y %H:%M')
+
+
+def init_tasks():
+    pass
