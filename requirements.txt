@@ -13,3 +13,4 @@ gunicorn[eventlet]
 tarantool
 celery
 redis
+blinker
