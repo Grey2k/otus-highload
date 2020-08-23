@@ -26,9 +26,8 @@ class FeedService:
 class PostService:
 
     @inject
-    def __init__(self, repo: PostsRepo, feed: FeedService):
+    def __init__(self, repo: PostsRepo):
         self.repo = repo
-        self.feed = feed
 
     def create(self, author: Profile, content: str):
         post = self.repo.save(Post(
@@ -38,4 +37,7 @@ class PostService:
             created_at=datetime.utcnow()
         ))
         self.repo.db.commit()
-        self.feed.add_post(author.id, post)
+        event_manager.trigger('add_post', post=post)
+
+    def get(self, post_id):
+        return self.repo.find_by_id(post_id)
