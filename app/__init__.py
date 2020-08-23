@@ -24,7 +24,6 @@ def create_app(env="production"):
     app.di = injector.injector
     login_manager.init_app(app)
     init_template_filters(app)
-    init_tasks()
 
     return app
 
@@ -67,6 +66,3 @@ def init_template_filters(app):
     def filter_datetime(dt: datetime):
         return dt.strftime('%d.%m.%Y %H:%M')
 
-
-def init_tasks():
-    pass
