@@ -61,6 +61,40 @@ services:
     container_name: mysql-tarantool-replicator
     networks:
       - shared
+  broker:
+    image: redis:latest
+    restart: always
+    container_name: broker
+    volumes:
+      - ./volumes/broker/:/data
+    networks:
+      - shared
+    celery:
+      build: .
+      command: celery worker -A app.app.celery
+      restart: always
+      environment:
+        FLASK_APP: cli_app.py
+        ENV: ${ENV}
+        SECRET_KEY: ${SECRET_KEY}
+        DB_HOST: ${DB_HOST}
+        DB_PORT: ${DB_PORT}
+        DB_USER: ${MYSQL_USER}
+        DB_PASSWORD: ${MYSQL_PASSWORD}
+        DB_DATABASE: ${MYSQL_DATABASE}
+        TARANTOOL_HOST: ${TARANTOOL_HOST}
+        TARANTOOL_PORT: ${TARANTOOL_PORT}
+        TARANTOOL_USER_NAME: ${TARANTOOL_USER_NAME}
+        TARANTOOL_USER_PASSWORD: ${TARANTOOL_USER_PASSWORD}
+        CELERY_BROKER_URL: ${CELERY_BROKER_URL}
+        CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
+      depends_on:
+        - social-network
+        - broker
+      volumes:
+        - "./app:/usr/src/app"
+      networks:
+        - shared
 
 networks:
   shared:
