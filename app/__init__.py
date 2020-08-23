@@ -5,25 +5,30 @@ from datetime import datetime
 from flask import Flask
 from flask_injector import FlaskInjector
 
-from app.auth import login_manager
-from app.celery import celery
-from app.database.db import pool, init_db
-from app.database.repositories import UserRepo, ProfileRepo
-from app.di import configure_di
-from app.tarantool.tarantool import init_tarantool
-
 
 def create_app(env="production"):
     app = Flask(__name__)
     init_config(app, env)
-    init_db(app)
-    init_tarantool(app)
+
+    from app.celery import celery
     celery.init_app(app)
+
+    from app.database.db import pool, init_db
+    init_db(app)
+
+    from app.tarantool.tarantool import init_tarantool
+    init_tarantool(app)
+
     init_routes(app)
+    from app.di import configure_di
     injector = FlaskInjector(app=app, modules=[configure_di])
     app.di = injector.injector
+
+    from app.auth import login_manager
     login_manager.init_app(app)
+
     init_template_filters(app)
+    init_tasks()
 
     return app
 
@@ -66,3 +71,6 @@ def init_template_filters(app):
     def filter_datetime(dt: datetime):
         return dt.strftime('%d.%m.%Y %H:%M')
 
+
+def init_tasks():
+    import app.feed.tasks
