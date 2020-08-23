@@ -298,8 +298,29 @@ class DialogParticipantsRepo(BaseRepo):
 class PostsRepo(BaseRepo):
     table_name = 'posts'
     model_class = Post
+    authors_table_name = 'profiles'
+    authors_model_class = Profile
+
+    def find_by_id(self, entity_id):
+        post = super().find_by_id(entity_id)
+        if not post:
+            return None
+        post.author = self._find_author(post.author_id)
+        return post
+
+    def _find_author(self, post_id):
+        sql = f'SELECT * FROM `{self.authors_table_name}` where id = %s'
+        row = self.db.query(sql, (post_id,)).fetchone()
+        return self.authors_model_class(**row) if row else None
 
 
 class SubscribersRepo(BaseRepo):
     table_name = 'subscribers'
     model_class = Subscribe
+
+    def find_subscribed(self, subscribed_to):
+        query = f'SELECT * from `{self.table_name}` WHERE subscribe_to = %(id)s'
+        with self.db.cursor() as cursor:
+            cursor.execute(query, {'id': subscribed_to})
+            items = [self.model_class(**row) for row in cursor.fetchall()]
+        return items
