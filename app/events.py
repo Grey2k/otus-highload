@@ -9,6 +9,8 @@ class EventManager:
         self.events= {}
 
     def trigger(self, event_name, **params):
+        if self.events.get(event_name) is None:
+            return
         self.events[event_name].send(
             current_app._get_current_object(),
             **params
