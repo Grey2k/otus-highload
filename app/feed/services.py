@@ -4,10 +4,12 @@ from injector import inject
 
 from app.database.models import Profile, Post
 from app.database.repositories import PostsRepo
+from app.events import event_manager
 from app.feed.providers import FeedProvider
 
 
 class FeedService:
+    LIMIT = 1000
 
     @inject
     def __init__(self, feed_provider: FeedProvider):
@@ -18,6 +20,7 @@ class FeedService:
 
     def add_post(self, feed_id, post):
         self.feed_provider.add(feed_id, post)
+        self.feed_provider.cutoff(feed_id, self.LIMIT)
 
 
 class PostService:
