@@ -1,7 +1,7 @@
 from injector import inject
 
 from app.database.models import FriendshipStatus, Friendship, Subscribe
-from app.database.repositories import FriendRepo, SubscribersRepo
+from app.database.repositories import FriendRepo, SubscribersRepo, Spec
 from app.events import event_manager
 
 
@@ -41,3 +41,16 @@ class SubscribeManager:
             Subscribe(subscriber=subscriber, subscribe_to=subscribe_to)
         )
         self.subscribers_repo.db.commit()
+
+    def get_subscribers(self, author_id):
+        return self.subscribers_repo.find_subscribed(author_id)
+
+    def get_subscribers_generator(self, author_id, chunk_size=100):
+        current_page = 1
+        total_pages = 2
+        spec = Spec().where('subscribe_to=%(id)s', {'id': author_id})
+        while total_pages >= current_page:
+            collection = self.subscribers_repo.find_by_spec(spec, page=current_page, count=chunk_size)
+            yield collection.items
+            current_page += 1
+            total_pages = collection.pagination.total_pages
