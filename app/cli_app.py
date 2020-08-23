@@ -7,13 +7,24 @@ from faker import Faker
 from flask.cli import AppGroup
 from werkzeug.security import generate_password_hash
 
-from app import create_app, di
+from app import create_app
+from app.celery import celery as flask_celery
 from app.database.db import pool
-from app.database.models import User, Profile, City
-from app.database.repositories import CityRepo, UserRepo, ProfileRepo
 from app.ext.migrate import Migrate
 
 app = create_app(env=os.environ.get('ENV'))
+
+celery = flask_celery.celery
+
+
+class ContextTask(celery.Task):
+    def __call__(self, *args, **kwargs):
+        with app.app_context():
+            return self.run(*args, **kwargs)
+
+
+celery.Task = ContextTask
+
 db = pool.master
 migrate = Migrate(app, db)
 seed = AppGroup('seed', help='Seeding database')
@@ -24,6 +35,10 @@ fake = Faker()
 @seed.command('cities')
 @click.argument('count')
 def seed_cities(count):
+    from app.database.repositories import CityRepo
+    from app import di
+    from app.database.models import City
+
     repo: CityRepo = di.get(CityRepo)
     for _ in range(int(count)):
         repo.save(City(name=fake.city()))
@@ -33,6 +48,11 @@ def seed_cities(count):
 @seed.command('users')
 @click.argument('count')
 def seed_users(count):
+    from app.database.repositories import UserRepo
+    from app import di
+    from app.database.models import User, Profile
+    from app.database.repositories import ProfileRepo
+
     user_repo: UserRepo = di.get(UserRepo)
     profile_repo: ProfileRepo = di.get(ProfileRepo)
     count = int(count)
@@ -51,3 +71,13 @@ def seed_users(count):
                 user_id=user.id
             ))
             db.commit()
+
+
+@app.cli.command('build_feed')
+@click.argument('feed_id', type=int)
+def build_feed(feed_id):
+    from app.feed.services import FeedService
+    from app import di
+
+    feed: FeedService = di.get(FeedService)
+    feed.build(feed_id)

@@ -12,14 +12,22 @@ class FeedService:
     LIMIT = 1000
 
     @inject
-    def __init__(self, feed_provider: FeedProvider):
+    def __init__(self, feed_provider: FeedProvider, posts_repo: PostsRepo):
         self.feed_provider = feed_provider
+        self.posts_repo = posts_repo
 
     def load(self, feed_id, page, count):
         return self.feed_provider.load(feed_id, page, count)
 
     def add_post(self, feed_id, post):
         self.feed_provider.add(feed_id, post)
+        self.feed_provider.cutoff(feed_id, self.LIMIT)
+
+    def build(self, feed_id):
+        self.feed_provider.clear(feed_id)
+        posts = self.posts_repo.load_feed(feed_id, self.LIMIT)
+        for post in posts:
+            self.feed_provider.add(feed_id, post)
         self.feed_provider.cutoff(feed_id, self.LIMIT)
 
 
