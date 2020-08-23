@@ -1,4 +1,4 @@
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, fields
 from typing import List
 
 from flask_login import UserMixin
@@ -11,6 +11,10 @@ class Model:
     def to_dict(self):
         return asdict(self)
 
+    @classmethod
+    def fields(cls):
+        return [field.name for field in fields(cls)]
+
 
 @dataclass
 class City(Model):
@@ -22,10 +26,10 @@ class City(Model):
 class Profile(Model):
     first_name: str
     last_name: str
-    interests: str
-    birth_date: Date
-    gender: str
-    city_id: int
+    interests: str = None
+    birth_date: Date = None
+    gender: str = None
+    city_id: int = None
     user_id: int = None
     id: int = None
 
