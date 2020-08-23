@@ -13,6 +13,9 @@
                     {{ post.content }}
                 </div>
             </b-list-group-item>
+        {% else %}
+            <p></p>
+            <p>Feed empty</p>
         {% endfor %}
         <b-list-group-item>
             {% if pagination.total_pages > 1 %}
