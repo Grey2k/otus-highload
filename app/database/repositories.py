@@ -138,6 +138,9 @@ class BaseRepo(ABC):
             cursor.execute(query, [entity.id])
             self.db.commit()
 
+    def project(self, model: Model, row):
+        return {key: row.get(key) for key in model.fields() if row.get(key) is not None}
+
 
 class UserRepo(BaseRepo):
     table_name = 'users'
@@ -298,8 +301,6 @@ class DialogParticipantsRepo(BaseRepo):
 class PostsRepo(BaseRepo):
     table_name = 'posts'
     model_class = Post
-    authors_table_name = 'profiles'
-    authors_model_class = Profile
 
     def find_by_id(self, entity_id):
         post = super().find_by_id(entity_id)
@@ -309,9 +310,28 @@ class PostsRepo(BaseRepo):
         return post
 
     def _find_author(self, post_id):
-        sql = f'SELECT * FROM `{self.authors_table_name}` where id = %s'
+        sql = f'SELECT * FROM `{ProfileRepo.table_name}` where id = %s'
         row = self.db.query(sql, (post_id,)).fetchone()
-        return self.authors_model_class(**row) if row else None
+        return ProfileRepo.model_class(**row) if row else None
+
+    def load_feed(self, feed_id, limit):
+        query = f'''
+            SELECT t.id, t.author_id, t.content, t.created_at, p.first_name, p.last_name  from `{self.table_name}` t
+            JOIN `{SubscribersRepo.table_name}` s on t.author_id = s.subscribe_to
+            JOIN `{ProfileRepo.table_name}` p on p.id = t.author_id
+            WHERE s.subscriber = %(subscriber)s
+            ORDER BY created_at desc
+            LIMIT {limit}
+        '''
+        with self.db.cursor() as cursor:
+            cursor.execute(query, {'subscriber': feed_id})
+            rows = cursor.fetchall()
+            items = []
+            for row in rows:
+                post = self.model_class(**self.project(self.model_class, row))
+                post.author = ProfileRepo.model_class(**self.project(ProfileRepo.model_class, row))
+                items.append(post)
+        return items
 
 
 class SubscribersRepo(BaseRepo):
