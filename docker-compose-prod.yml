@@ -20,6 +20,8 @@ services:
       TARANTOOL_PORT: ${TARANTOOL_PORT}
       TARANTOOL_USER_NAME: ${TARANTOOL_USER_NAME}
       TARANTOOL_USER_PASSWORD: ${TARANTOOL_USER_PASSWORD}
+      CELERY_BROKER_URL: ${CELERY_BROKER_URL}
+      CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
     volumes:
       - "./logs:/usr/src/logs"
       - "./app:/usr/src/app"
