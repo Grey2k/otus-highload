@@ -17,8 +17,17 @@ class FeedProvider(ABC):
     def load(self, feed_id, page, count) -> PaginatedCollection:
         pass
 
+    @abstractmethod
+    def clear(self, feed_id):
+        pass
+
+    @abstractmethod
+    def cutoff(self, feed_id, limit):
+        pass
+
 
 class TarantoolFeedProvider(FeedProvider):
+
     model_class = FeedItem
     space_name = 'feed'
     index_name = 'feed_id'
@@ -36,6 +45,12 @@ class TarantoolFeedProvider(FeedProvider):
             post.id, feed_id, post.author.name,
             post.author_id, post.content, post.created_at.strftime('%Y-%m-%d %H:%M:%S')
         ])
+
+    def clear(self, feed_id):
+        self.space.call('clear_feed', feed_id)
+
+    def cutoff(self, feed_id, limit):
+        self.space.call('cutoff_feed', feed_id, limit)
 
     def load(self, feed_id, page, count) -> PaginatedCollection:
         cnt = self.space.call(f'box.space.{self.space_name}.index.{self.index_name}:count', feed_id).data[0]
