@@ -125,3 +125,10 @@ class FeedItem(Model):
     content: str
     id: int = None
     publish_date: Date = None
+
+
+@dataclass
+class Subscribe(Model):
+    subscriber: int
+    subscribe_to: int
+    id: int = None

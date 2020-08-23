@@ -2,7 +2,7 @@ from abc import ABC
 from collections import defaultdict
 
 from app.database.models import User, City, Profile, Friendship, Model, FriendshipStatus, Dialog, DialogMessage, \
-    DialogType, DialogParticipant, Post
+    DialogType, DialogParticipant, Post, Subscribe
 from app.database.utils import Pagination, PaginatedCollection
 from app.ext.mysql import MysqlPool
 
@@ -298,3 +298,8 @@ class DialogParticipantsRepo(BaseRepo):
 class PostsRepo(BaseRepo):
     table_name = 'posts'
     model_class = Post
+
+
+class SubscribersRepo(BaseRepo):
+    table_name = 'subscribers'
+    model_class = Subscribe
