@@ -6,20 +6,8 @@
 {% block content %}
 
     <v-post-form submit-url="{{ url_for('feed.add') }}"></v-post-form>
-
     <b-list-group flush>
-        {% for post in posts %}
-            <b-list-group-item>
-                <h4>{{ post.author }} </h4>
-                <div>{{ post.publish_date }}</div>
-                <div>
-                    {{ post.content }}
-                </div>
-            </b-list-group-item>
-        {% else %}
-            <p></p>
-            <p>Feed empty</p>
-        {% endfor %}
+        <v-feed v-bind:list='{{posts|tojson}}'></v-feed>
         <b-list-group-item>
             {% if pagination.total_pages > 1 %}
                 <b-pagination-nav
