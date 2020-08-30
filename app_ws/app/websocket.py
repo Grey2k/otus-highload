@@ -40,12 +40,12 @@ class ConnectionManager:
 
     async def disconnect(self, sid):
         self.close(sid)
+        if self._on_disconnect:
+            await self._on_disconnect(sid)
 
     async def disconnect_request(self, sid):
         await self.sio.disconnect(sid)
         self.close(sid)
-        if self._on_disconnect:
-            await self._on_disconnect(sid)
 
     async def emit(self, event_name, data, room):
         await self.sio.emit(event_name, data, room=room)
