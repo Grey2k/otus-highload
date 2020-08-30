@@ -46,7 +46,7 @@ class FeedService:
                 'author': post.author.name,
                 'author_id': post.author_id,
                 'content': post.content,
-                'created_at': post.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                'publish_date': post.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             }).encode()
         )
 
