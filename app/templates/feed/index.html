@@ -7,7 +7,7 @@
 
     <v-post-form submit-url="{{ url_for('feed.add') }}"></v-post-form>
     <b-list-group flush>
-        <v-feed v-bind:list='{{posts|tojson}}'></v-feed>
+        <v-feed v-bind:list='{{posts|tojson}}' feed-id="{{current_user.profile_id}}"></v-feed>
         <b-list-group-item>
             {% if pagination.total_pages > 1 %}
                 <b-pagination-nav
