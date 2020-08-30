@@ -1,11 +1,26 @@
+import json
 from datetime import datetime
 
+from flask import current_app
 from injector import inject
 
+from app import FlaskPika
 from app.database.models import Profile, Post
 from app.database.repositories import PostsRepo
 from app.events import event_manager
 from app.feed.providers import FeedProvider
+
+
+class Publisher:
+
+    def __init__(self, exchange_name: str, publisher: FlaskPika):
+        self.exchange_name = exchange_name
+        self.publisher = publisher
+        self.exchange_inited = True
+
+    def publish(self, routing_key, body):
+        with current_app.app_context():
+            self.publisher.channel.basic_publish(self.exchange_name, routing_key, body)
 
 
 class FeedService:
