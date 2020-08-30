@@ -22,7 +22,7 @@ class ConsumerManager:
         self.connection = None
         self.channel = None
         self.exchange = None
-        self.tasks = []
+        self.tasks = {}
 
     async def connect(self):
         self.connection = await aio_pika.connect_robust(self.broker_url)
@@ -31,24 +31,30 @@ class ConsumerManager:
         await self.channel.set_qos(prefetch_count=self.prefetch_count)
         self.exchange = await self.channel.declare_exchange(self.exchange_name, auto_delete=True)
 
-    def consume_queue(self, queue_name, callback):
+    def consume_queue(self, sid, queue_name, callback):
         async def consume(channel, exchange):
             queue = await channel.declare_queue(queue_name, auto_delete=True)
             await queue.bind(exchange, queue_name)
             await queue.consume(callback)
 
-        self.tasks.append(
-            asyncio.create_task(consume(self.channel, self.exchange))
-        )
+        self.tasks[sid] = asyncio.create_task(consume(self.channel, self.exchange))
+
+    async def stop_cunsuming(self, sid):
+        if not self.tasks.get(sid):
+            return
+        self.tasks[sid].cancel()
+        await self.tasks[sid]
+        del self.tasks[sid]
 
     def run(self):
         self.app.on_startup.append(self._start)
         self.app.on_cleanup.append(self._stop)
 
     async def _start(self, *args, **kwargs):
-        self.tasks.append(asyncio.create_task(self.connect()))
+        self.tasks['connection'] = asyncio.create_task(self.connect())
 
     async def _stop(self, *args, **kwargs):
-        for task in self.tasks:
+        for task in self.tasks.values():
             task.cancel()
             await task
+        self.tasks = {}

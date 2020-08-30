@@ -14,14 +14,19 @@ connection_manager = websocket.create(app)
 consumer_manager = consumer.create(app)
 
 
-def consume(connection: websocket.Connection):
+def start_consume(connection: websocket.Connection):
     async def process_message(message: aio_pika.IncomingMessage):
         async with message.process():
             print(json.loads(message.body), flush=True)
             await connection_manager.emit('new-post', json.loads(message.body), room=connection.sid)
             await asyncio.sleep(1)
 
-    consumer_manager.consume_queue(connection.queue_name, process_message)
+    consumer_manager.consume_queue(connection.sid, connection.queue_name, process_message)
 
 
-connection_manager.on_connect(consume)
+async def stop_consume(sid):
+    await consumer_manager.stop_cunsuming(sid)
+
+
+connection_manager.on_connect(start_consume)
+connection_manager.on_disconnect(stop_consume)
