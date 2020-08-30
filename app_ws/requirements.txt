@@ -1,0 +1,11 @@
+aiohttp
+aio_pika
+async-timeout
+chardet
+multidict
+python-engineio
+python_socketio
+six
+yarl
+gunicorn
+uvloop
