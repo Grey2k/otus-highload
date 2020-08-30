@@ -16,10 +16,23 @@
 </template>
 
 <script>
+const io = require('socket.io-client');
+
 export default {
   name: 'Feed',
   props: {
     list: Array,
+    feedId: String,
+    socketUrl: String,
+  },
+  mounted() {
+    const socket = io(this.socketUrl, {transports: ['websocket'], query: {feed_id: this.feedId}});
+    socket.on('connect', () => {
+      console.log(socket.id);
+    });
+    socket.on('new-post', (post) => {
+      this.addPost(post)
+    })
   },
   data: function () {
     return {
