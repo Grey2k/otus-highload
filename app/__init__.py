@@ -5,10 +5,15 @@ from datetime import datetime
 from flask import Flask
 from flask_injector import FlaskInjector
 
+from app.ext.pika import FlaskPika
+
 
 def create_app(env="production"):
     app = Flask(__name__)
     init_config(app, env)
+
+    from app.broker import publisher
+    publisher.init_app(app)
 
     from app.celery import celery
     celery.init_app(app)
