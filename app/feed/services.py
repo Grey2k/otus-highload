@@ -27,9 +27,10 @@ class FeedService:
     LIMIT = 1000
 
     @inject
-    def __init__(self, feed_provider: FeedProvider, posts_repo: PostsRepo):
+    def __init__(self, feed_provider: FeedProvider, posts_repo: PostsRepo, publisher: Publisher):
         self.feed_provider = feed_provider
         self.posts_repo = posts_repo
+        self.publisher = publisher
 
     def load(self, feed_id, page, count):
         return self.feed_provider.load(feed_id, page, count)
@@ -37,6 +38,17 @@ class FeedService:
     def add_post(self, feed_id, post):
         self.feed_provider.add(feed_id, post)
         self.feed_provider.cutoff(feed_id, self.LIMIT)
+        self.publisher.publish(
+            routing_key=f'feed_{feed_id}',
+            body=json.dumps({
+                'id': post.id,
+                'feed_id': feed_id,
+                'author': post.author.name,
+                'author_id': post.author_id,
+                'content': post.content,
+                'created_at': post.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            }).encode()
+        )
 
     def build(self, feed_id):
         self.feed_provider.clear(feed_id)
