@@ -223,6 +223,10 @@ class DialogsRepo(BaseRepo):
     table_name = 'dialogs'
     model_class = Dialog
 
+    def __init__(self, profiles_repo: ProfileRepo, pool: MysqlPool, policy=PoolPolicy.USE_MASTER):
+        super().__init__(pool, policy)
+        self.profiles_repo = profiles_repo
+
     def find_by_id(self, entity_id):
         dialog = super().find_by_id(entity_id)
         if not dialog:
@@ -248,16 +252,21 @@ class DialogsRepo(BaseRepo):
         if not dialogs_id:
             return []
         profiles_query = f'''
-           SELECT t.*, dp.dialog_id from `profiles` as t
-           JOIN dialogs_participants as dp on dp.profile_id = t.id
-           WHERE dp.dialog_id in %s
+           SELECT * from `dialogs_participants` 
+           WHERE dialog_id in %s
         '''
         with self.db.cursor() as cursor:
             cursor.execute(profiles_query, [dialogs_id])
-            profiles = defaultdict(list)
-            for row in cursor.fetchall():
-                profiles[row.pop('dialog_id')].append(Profile(**row))
-            return profiles
+            profiles_dialogs_ids = {row['profile_id']: row['dialog_id'] for row in cursor.fetchall()}
+            if not profiles_dialogs_ids:
+                return {}
+            profiles = self.profiles_repo.find_by_ids([*profiles_dialogs_ids.keys()])
+            print(profiles, flush=True)
+            result = defaultdict(list)
+            for profile in profiles.values():
+                print(profile, flush=True)
+                result[profiles_dialogs_ids[profile.id]].append(profile)
+            return result
 
     def find_dialogs(self, profile_id):
         dialogs_query = f'''
