@@ -166,6 +166,57 @@ services:
     networks:
       - shared
 
+  mysql-manager-1:
+    image: mysql/mysql-cluster
+    networks:
+      - shared
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./conf/mysql_cluster/my.cnf:/etc/my.cnf
+      - ./conf/mysql_cluster/mysql-cluster.cnf:/etc/mysql-cluster.cnf
+      - ./volumes/mysql_cluster/manager:/var/lib/mysql
+    command: ndb_mgmd
+
+  data-node-1:
+    image: mysql/mysql-cluster
+    networks:
+      - shared
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./conf/mysql_cluster/my.cnf:/etc/my.cnf
+      - ./conf/mysql_cluster/mysql-cluster.cnf:/etc/mysql-cluster.cnf
+      - ./volumes/mysql_cluster/node1:/var/lib/mysql
+    command: ndbd
+
+  data-node-2:
+    image: mysql/mysql-cluster
+    networks:
+      - shared
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./conf/mysql_cluster/my.cnf:/etc/my.cnf
+      - ./conf/mysql_cluster/mysql-cluster.cnf:/etc/mysql-cluster.cnf
+      - ./volumes/mysql_cluster/node2:/var/lib/mysql
+    command: ndbd
+
+  dialogs-db:
+    image: mysql/mysql-cluster
+    networks:
+      - shared
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./conf/mysql_cluster/my.cnf:/etc/my.cnf
+      - ./conf/mysql_cluster/mysql-cluster.cnf:/etc/mysql-cluster.cnf
+      - ./volumes/mysql_cluster/mysql:/var/lib/mysql
+    command: mysqld
 
 networks:
   shared:

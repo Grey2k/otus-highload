@@ -1,0 +1,23 @@
+[ndbd default]
+NoOfReplicas=1
+DataMemory=80M
+IndexMemory=18M
+
+[ndb_mgmd]
+NodeId=1
+hostname=mysql-manager-1
+datadir=/var/lib/mysql
+
+[ndbd]
+NodeId=11
+hostname=data-node-1
+datadir=/var/lib/mysql
+
+[ndbd]
+NodeId=12
+hostname=data-node-2
+datadir=/var/lib/mysql
+
+[mysqld]
+NodeId=21
+hostname=dialogs-db
