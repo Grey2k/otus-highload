@@ -1,8 +1,6 @@
 from abc import ABC
-from collections import defaultdict
 
-from app.database.models import User, City, Profile, Friendship, Model, FriendshipStatus, Dialog, DialogMessage, \
-    DialogType, DialogParticipant, Post, Subscribe
+from app.database.models import User, City, Profile, Friendship, Model, FriendshipStatus, Post, Subscribe
 from app.database.utils import Pagination, PaginatedCollection
 from app.ext.mysql import MysqlPool
 
@@ -217,94 +215,6 @@ class FriendRepo(BaseRepo):
             if cursor.rowcount == 0:
                 return None
             return Friendship(**cursor.fetchone())
-
-
-class DialogsRepo(BaseRepo):
-    table_name = 'dialogs'
-    model_class = Dialog
-
-    def __init__(self, profiles_repo: ProfileRepo, pool: MysqlPool, policy=PoolPolicy.USE_MASTER):
-        super().__init__(pool, policy)
-        self.profiles_repo = profiles_repo
-
-    def find_by_id(self, entity_id):
-        dialog = super().find_by_id(entity_id)
-        if not dialog:
-            return None
-        profiles = self._find_dialogs_participants([dialog.id])
-        dialog.participants = profiles.get(dialog.id, [])
-        return dialog
-
-    def find_direct(self, profile_one, profile_two):
-        query = f'''
-            SELECT t.* from `{self.table_name}` as t
-            JOIN dialogs_participants as dp1 on dp1.dialog_id = t.id
-            JOIN dialogs_participants as dp2 on dp2.dialog_id = t.id
-            WHERE t.type=%(type)s and dp1.profile_id=%(one)s and dp2.profile_id=%(two)s
-        '''
-        with self.db.cursor() as cursor:
-            cursor.execute(query, {'one': profile_one, 'two': profile_two, 'type': DialogType.DIRECT})
-            if cursor.rowcount == 0:
-                return None
-            return self.model_class(**cursor.fetchone())
-
-    def _find_dialogs_participants(self, dialogs_id):
-        if not dialogs_id:
-            return []
-        profiles_query = f'''
-           SELECT * from `dialogs_participants` 
-           WHERE dialog_id in %s
-        '''
-        with self.db.cursor() as cursor:
-            cursor.execute(profiles_query, [dialogs_id])
-            profiles_dialogs_ids = {row['profile_id']: row['dialog_id'] for row in cursor.fetchall()}
-            if not profiles_dialogs_ids:
-                return {}
-            profiles = self.profiles_repo.find_by_ids([*profiles_dialogs_ids.keys()])
-            print(profiles, flush=True)
-            result = defaultdict(list)
-            for profile in profiles.values():
-                print(profile, flush=True)
-                result[profiles_dialogs_ids[profile.id]].append(profile)
-            return result
-
-    def find_dialogs(self, profile_id):
-        dialogs_query = f'''
-           SELECT t.* from `{self.table_name}` as t
-           JOIN dialogs_participants as dp on dp.dialog_id = t.id
-           WHERE dp.profile_id = %(profile_id)s
-        '''
-        with self.db.cursor() as cursor:
-            cursor.execute(dialogs_query, {'profile_id': profile_id})
-            dialogs = [self.model_class(**row) for row in cursor.fetchall()]
-            profiles = self._find_dialogs_participants([d.id for d in dialogs])
-            for dialog in dialogs:
-                dialog.participants = profiles.get(dialog.id, [])
-
-            return dialogs
-
-
-class DialogMessagesRepo(BaseRepo):
-    table_name = 'dialogs_messages'
-    model_class = DialogMessage
-
-    def find_by_dialog(self, dialog_id):
-        query = f'''
-           SELECT * from `{self.table_name}`
-           WHERE dialog_id = %(dialog_id)s
-           ORDER BY id ASC
-        '''
-        with self.db.cursor() as cursor:
-            cursor.execute(query, {'dialog_id': dialog_id})
-            return [self.model_class(**row) for row in cursor.fetchall()]
-
-
-class DialogParticipantsRepo(BaseRepo):
-    table_name = 'dialogs_participants'
-    model_class = DialogParticipant
-
-    def save(self, entity: Model):
-        return super()._add(entity)
 
 
 class PostsRepo(BaseRepo):

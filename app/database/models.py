@@ -1,5 +1,4 @@
 from dataclasses import dataclass, asdict, fields
-from typing import List
 
 from flask_login import UserMixin
 from pymysql import Date
@@ -73,42 +72,6 @@ class Friendship(Model):
 
     def wait_confirmation(self, profile_id):
         return self.destination_id == profile_id and self.status == FriendshipStatus.WAITING
-
-
-class DialogType:
-    DIRECT = 1
-
-
-@dataclass
-class Dialog(Model):
-    created_by: int
-    type: int = DialogType.DIRECT
-    id: int = None
-    created_at: Date = None
-    participants: List[Profile] = None
-
-    def name(self, skip_profile=None):
-        if not self.participants:
-            return 'Empty dialog'
-        participants = self.participants
-        if skip_profile:
-            participants = filter(lambda p: p.id != skip_profile, participants)
-        return ', '.join(map(lambda p: p.name, participants))
-
-
-@dataclass
-class DialogMessage(Model):
-    text: str
-    sender_id: int
-    dialog_id: int
-    id: int = None
-    created_at: Date = None
-
-
-@dataclass
-class DialogParticipant(Model):
-    profile_id: int
-    dialog_id: int
 
 
 @dataclass

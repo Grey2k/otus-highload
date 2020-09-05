@@ -5,7 +5,6 @@ from pymysql import MySQLError
 from app.ext.mysql import MysqlPool, Mysql
 
 pool = MysqlPool()
-dialogs_db = MysqlPool()
 
 
 def transactional(fn):
@@ -44,14 +43,3 @@ def init_db(app):
             'password': app.config.get('DB_PASSWORD', 'password'),
             'charset': app.config.get('DB_CHARSET', 'utf8mb4'),
         }))
-
-
-def init_dialogs_db(app):
-    dialogs_db.set_master(Mysql(app, {
-        'host': app.config.get('DIALOGS_DB', 'dialogs-db'),
-        'port': int(app.config.get('DIALOGS_DB_PORT', 3306)),
-        'database': app.config.get('DIALOGS_DB_DATABASE', 'dialogs_db'),
-        'user': app.config.get('DIALOGS_DB_USER', 'root'),
-        'password': app.config.get('DIALOGS_DB_PASSWORD', 'root'),
-        'charset': app.config.get('DIALOGS_DB_CHARSET', 'utf8mb4'),
-    }))
