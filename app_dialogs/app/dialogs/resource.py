@@ -75,6 +75,7 @@ class ErrorsDto(ResourceDto):
 
     def as_dict(self):
         return {
+            'success': False,
             'errors': self.errors
         }
 
@@ -85,5 +86,6 @@ class CreatedDto(ResourceDto):
 
     def as_dict(self):
         return {
+            'success': True,
             'id': self.entity.id
         }
