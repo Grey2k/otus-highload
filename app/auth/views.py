@@ -23,7 +23,7 @@ def login(auth: AuthManager):
             return render_template('auth/login.html', form=form)
 
         resp = make_response(redirect(url_for('main.index')))
-        resp.set_cookie('auth_token', jwt.create_token(current_user.profile))
+        resp.set_cookie('auth_token', jwt.create_token(current_user.profile), max_age=60*60*24*360)
 
         return resp
 
@@ -51,7 +51,7 @@ def register(city_repo: CityRepo, user_registration: UserRegistration, auth_mana
         )
         auth_manager.login_user(user)
         resp = make_response(redirect(url_for('main.profile', profile_id=user.profile.id)))
-        resp.set_cookie('auth_token', jwt.create_token(current_user.profile))
+        resp.set_cookie('auth_token', jwt.create_token(current_user.profile), max_age=60*60*24*360)
 
         return resp
 
