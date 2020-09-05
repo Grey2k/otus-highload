@@ -1,3 +1,4 @@
+import abc
 from typing import List
 
 from flask import jsonify
@@ -5,39 +6,84 @@ from flask import jsonify
 from app.database.models import DialogMessage, Dialog
 
 
-def dialog_list(profile_id, items):
-    return jsonify({
-        'success': True,
-        'items': _dialog_list(profile_id, items)
-    })
+class ResourceDto(abc.ABC):
+
+    @abc.abstractmethod
+    def as_dict(self):
+        pass
 
 
-def _dialog_list(profile_id, items: List[Dialog]):
-    return [_dialog_detail(profile_id, item) for item in items]
+def resource(dto: ResourceDto):
+    return dto.as_dict()
 
 
-def dialog_detail(profile_id, dialog: Dialog, messages: List[DialogMessage]):
-    return jsonify({
-        'success': True,
-        'dialog': _dialog_detail(profile_id, dialog),
-        'messages':  _dialog_messages(messages)
-    })
+class DialogListDto(ResourceDto):
 
+    def __init__(self, profile_id, dialogs: List[Dialog]):
+        self.profile_id = profile_id
+        self.dialogs = dialogs
 
-def _dialog_detail(profile_id, dialog: Dialog):
-    return {
-        'id': dialog.id,
-        'name': dialog.name(profile_id)
-    }
-
-
-def _dialog_messages(messages: List[DialogMessage]):
-    return [
-        {
-            'id': message.id,
-            'text': message.text,
-            'created_at': message.created_at,
-            'sender_id': message.sender_id,
+    def as_dict(self):
+        return {
+            'items': [DialogDto(self.profile_id, dialog).as_dict() for dialog in self.dialogs]
         }
-        for message in messages
-    ]
+
+
+class DialogDto(ResourceDto):
+
+    def __init__(self, profile_id, dialog: Dialog):
+        self.profile_id = profile_id
+        self.dialog = dialog
+
+    def as_dict(self):
+        return {
+            'id': self.dialog.id,
+            'name': self.dialog.name(self.profile_id)
+        }
+
+
+class MessageDto(ResourceDto):
+    def __init__(self, message: DialogMessage):
+        self.message = message
+
+    def as_dict(self):
+        return {
+            'id': self.message.id,
+            'text': self.message.text,
+            'created_at': self.message.created_at,
+            'sender_id': self.message.sender_id,
+        }
+
+
+class ChatDto(ResourceDto):
+
+    def __init__(self, profile_id, dialog: Dialog, messages: List[DialogMessage]):
+        self.profile_id = profile_id
+        self.dialog = dialog
+        self.messages = messages
+
+    def as_dict(self):
+        return {
+            'dialog': DialogDto(self.profile_id, self.dialog).as_dict(),
+            'messages': [MessageDto(message).as_dict() for message in self.messages]
+        }
+
+
+class ErrorsDto(ResourceDto):
+    def __init__(self, errors):
+        self.errors = errors
+
+    def as_dict(self):
+        return {
+            'errors': self.errors
+        }
+
+
+class CreatedDto(ResourceDto):
+    def __init__(self, entity):
+        self.entity = entity
+
+    def as_dict(self):
+        return {
+            'id': self.entity.id
+        }
