@@ -25,6 +25,7 @@ services:
       WEB_SOCKET_URL: ${WEB_SOCKET_URL}
       NOTIFICATIONS_BROKER: ${NOTIFICATIONS_BROKER}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      CHAT_SERVICE_URL: ${CHAT_SERVICE_URL}
     volumes:
       - "./logs:/usr/src/logs"
       - "./app:/usr/src/app"
@@ -234,6 +235,7 @@ services:
       DB_PASSWORD: ${MYSQL_PASSWORD}
       DB_DATABASE: ${MYSQL_DATABASE}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      CHAT_SERVICE_URL: ${CHAT_SERVICE_URL}
     volumes:
       - "./app_dialogs/app:/usr/src/app"
     networks:
