@@ -18,9 +18,11 @@ def create_app(env="production"):
     from app.celery import celery
     celery.init_app(app)
 
-    from app.database.db import pool, init_db, init_dialogs_db
+    from app.database.db import pool, init_db
     init_db(app)
-    init_dialogs_db(app)
+
+    from app.jwt import init_jwt
+    init_jwt(app)
 
     from app.tarantool.tarantool import init_tarantool
     init_tarantool(app)

@@ -24,6 +24,7 @@ services:
       CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
       WEB_SOCKET_URL: ${WEB_SOCKET_URL}
       NOTIFICATIONS_BROKER: ${NOTIFICATIONS_BROKER}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
     volumes:
       - "./logs:/usr/src/logs"
       - "./app:/usr/src/app"
@@ -150,6 +151,7 @@ services:
       - shared
     ports:
       - ${WS_APP_PUBLIC_PORT}:8000
+
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmq

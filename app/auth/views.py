@@ -1,10 +1,11 @@
-from flask import Blueprint, request, render_template, redirect, url_for
+from flask import Blueprint, request, render_template, redirect, url_for, make_response
 from flask_login import current_user
 
 from app.auth.exceptions import LoginException
 from app.auth.forms import LoginForm, RegistrationForm
 from app.auth.services import UserRegistration, AuthManager
 from app.database.repositories import CityRepo
+import app.jwt as jwt
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -21,7 +22,10 @@ def login(auth: AuthManager):
             form.email.errors.append(str(e))
             return render_template('auth/login.html', form=form)
 
-        return redirect(url_for('main.index'))
+        resp = make_response(redirect(url_for('main.index')))
+        resp.set_cookie('auth_token', jwt.create_token(current_user.profile))
+
+        return resp
 
     return render_template('auth/login.html', form=form)
 
@@ -46,6 +50,9 @@ def register(city_repo: CityRepo, user_registration: UserRegistration, auth_mana
             city_id=form.city.data,
         )
         auth_manager.login_user(user)
-        return redirect(url_for('main.profile', profile_id=user.profile.id))
+        resp = make_response(redirect(url_for('main.profile', profile_id=user.profile.id)))
+        resp.set_cookie('auth_token', jwt.create_token(current_user.profile))
+
+        return resp
 
     return render_template('auth/register.html', form=form)

@@ -1,5 +1,6 @@
 Faker
 Flask
+Flask-JWT
 Flask-Login
 Flask-Script
 Flask-Injector
