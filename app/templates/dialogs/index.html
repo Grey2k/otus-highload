@@ -2,14 +2,10 @@
 
 {% block content %}
 
-<b-list-group flush>
-    {% for dialog in dialogs %}
-        <b-list-group-item>
-            <b-link href="{{url_for('dialogs.detail', dialog_id=dialog.id)}}">
-                {{ dialog.name(current_user.profile_id) }}
-            </b-link>
-        </b-list-group-item>
-    {% endfor %}
-</b-list-group>
+<v-chat-page
+        chat-list-url="{{chat_url}}"
+        chat-url="{{chat_url}}"
+        v-bind:profile-id="{{current_user.profile_id}}"
+></v-chat-page>
 
 {% endblock %}

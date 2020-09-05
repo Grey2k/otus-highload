@@ -1,4 +1,4 @@
-from flask import render_template, request, Blueprint
+from flask import render_template, request, Blueprint, current_app
 from flask_login import login_required, current_user
 from werkzeug.exceptions import NotFound
 
@@ -30,6 +30,7 @@ def profile(profile_id: int, city_repo: CityRepo, profile_repo: ProfileRepo, fri
         raise NotFound('Profile not found')
     return render_template(
         'profile.html',
+        chat_url=current_app.config.get('CHAT_SERVICE_URL'),
         profile=p,
         city=city_repo.find_by_id(p.city_id),
         friendship=friend_repo.find_friendship(

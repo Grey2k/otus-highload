@@ -24,9 +24,7 @@
           >
           </v-friendship>
           <br>
-          <b-button class="mr-1" variant="info" href="{{url_for('dialogs.direct', profile_id=profile.id)}}">
-              Send message
-          </b-button>
+          <v-chat-btn :profile-id="{{profile.id}}" chat-url="{{chat_url}}"></v-chat-btn>
       {% endif %}
   </b-card>
 {% endblock %}
