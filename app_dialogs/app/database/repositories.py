@@ -111,7 +111,7 @@ class DialogsRepo(BaseRepo):
         if not dialogs_id:
             return []
         profiles_query = f'''
-           SELECT t.*, dp.dialog_id from `profiles` as t
+           SELECT t.id, t.first_name, t.last_name, dp.dialog_id from `profiles` as t
            JOIN dialogs_participants as dp on dp.profile_id = t.id
            WHERE dp.dialog_id in %s
         '''
