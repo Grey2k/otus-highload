@@ -40,12 +40,17 @@ def profile(profile_id: int, city_repo: CityRepo, profile_repo: ProfileRepo, fri
 
 @bp.route('/search')
 @login_required
-def search(city_repo: CityRepo, profile_repo: TarantoolProfilesRepo):
+def search(city_repo: CityRepo, profile_repo: ProfileRepo):
     page = request.args.get('page', default=1, type=int)
-    first_name = request.args.get('first_name', type=str, default='') + '%'
-    last_name = request.args.get('last_name', type=str, default='') + '%'
-    collection = profile_repo.search(first_name=first_name, last_name=last_name, page=page, count=30)
-    cities = city_repo.find_by_ids({p.city_id for p in collection.items}) if collection.items else []
+    first_name = request.args.get('first_name', type=str, default='')
+    last_name = request.args.get('last_name', type=str, default='')
+    spec = Spec()
+    if first_name:
+        spec.where('first_name like %(first_name)s', {'first_name': first_name + '%'})
+    if last_name:
+        spec.where('last_name like %(last_name)s', {'last_name': last_name + '%'})
+    collection = profile_repo.use_slave().find_by_spec(spec, page, count=30)
+    cities = city_repo.use_slave().find_by_ids({p.city_id for p in collection.items}) if collection.items else []
     return render_template(
         'search.html',
         profiles=collection.items,
