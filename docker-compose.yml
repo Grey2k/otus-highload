@@ -225,6 +225,7 @@ services:
     build: ./app_dialogs
     container_name: dialogs-app
     restart: always
+    hostname: dialog1
     environment:
       FLASK_APP: cli_app.py
       ENV: ${ENV}
@@ -240,8 +241,38 @@ services:
       - "./app_dialogs/app:/usr/src/app"
     networks:
       - shared
+
+  dialogs-app2:
+    build: ./app_dialogs
+    container_name: dialogs-app2
+    restart: always
+    hostname: dialog2
+    environment:
+      FLASK_APP: cli_app.py
+      ENV: ${ENV}
+      SECRET_KEY: ${SECRET_KEY}
+      DIALOGS_DB: ${DIALOGS_DB}
+      DIALOGS_DB_PORT: ${DIALOGS_DB_PORT}
+      DIALOGS_DB_DATABASE: ${DIALOGS_DB_DATABASE}
+      DIALOGS_DB_USER: ${DIALOGS_DB_USER}
+      DIALOGS_DB_PASSWORD: ${DIALOGS_DB_PASSWORD}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      CHAT_SERVICE_URL: ${CHAT_SERVICE_URL}
+    volumes:
+      - "./app_dialogs/app:/usr/src/app"
+    networks:
+      - shared
+
+  haproxy:
+    image: haproxy
+    container_name: haproxy
+    volumes:
+    - "./conf/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg"
     ports:
       - ${DIALOGS_APP_PUBLIC_PORT}:8000
+    networks:
+      - shared
+
 
 networks:
   shared:
