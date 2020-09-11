@@ -65,6 +65,8 @@ export default {
       this.chat = data.dialog;
       this.messages = data.messages;
 
+      this.messages.filter(message => !message.is_read).forEach(this.readMessage)
+
       this.loading = false;
     },
     addMessage: async function (e) {
@@ -89,6 +91,15 @@ export default {
       });
       this.text = '';
       await request;
+    },
+    readMessage: function (message) {
+      fetch(this.chatUrl + this.chatId + '/' + message.id, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'JWT ' + get_cookie('auth_token'),
+        }
+      });
     }
   },
   watch: {
