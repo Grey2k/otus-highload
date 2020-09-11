@@ -16,7 +16,7 @@ def create_app(env="production"):
     init_db(app)
     init_routes(app)
 
-    injector = FlaskInjector(app=app, modules=[configure_di])
+    injector = FlaskInjector(app=app, modules=[configure_di(app)])
     app.di = injector.injector
 
     @app.after_request
