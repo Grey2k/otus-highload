@@ -28,7 +28,6 @@ def jwt_cookie_required(fn):
     def decorator(*args, **kwargs):
         try:
             token = request.cookies.get('auth_token')
-            print(token, flush=True)
             _default_jwt_decode_handler(token)
         except InvalidTokenError as e:
             return redirect(url_for('auth.logout'))
