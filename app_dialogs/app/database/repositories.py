@@ -1,7 +1,8 @@
 from abc import ABC
 from collections import defaultdict
+from typing import List
 
-from app.database.models import Profile, Model, Dialog, DialogMessage, DialogType, DialogParticipant
+from app.database.models import Profile, Model, Dialog, DialogMessage, DialogType, DialogParticipant, MessageStatus
 from app.ext.mysql import MysqlPool
 
 
@@ -160,3 +161,24 @@ class DialogParticipantsRepo(BaseRepo):
     def save(self, entity: Model):
         return super()._add(entity)
 
+    def find_by_dialog(self, dialog_id) -> List[DialogParticipant]:
+        return self._find_by_attribute('dialog_id', dialog_id)
+
+
+class MessageStatusRepo(BaseRepo):
+    table_name = 'message_status'
+    model_class = MessageStatus
+
+    def find_unread(self, recepient_id, message_id):
+        query = f'''
+        SELECT * from `{self.table_name}`
+        WHERE status = %(status)s and recepient_id = %(recepient_id)s and message_id = %(message_id)s
+        '''
+        with self.db.cursor() as cursor:
+            cursor.execute(query, {
+                'recepient_id': recepient_id,
+                'message_id': message_id,
+                'status': MessageStatus.STATUS_NOT_READ
+            })
+            row = cursor.fetchone()
+            return self.model_class(**row) if row else None

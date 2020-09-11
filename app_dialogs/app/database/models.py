@@ -60,3 +60,14 @@ class DialogMessage(Model):
 class DialogParticipant(Model):
     profile_id: int
     dialog_id: int
+
+
+@dataclass
+class MessageStatus(Model):
+    STATUS_NOT_READ = 0
+    STATUS_READ = 1
+
+    message_id: int
+    recepient_id: int
+    status: int
+    id: int = None
