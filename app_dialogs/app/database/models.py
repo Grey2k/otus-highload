@@ -53,7 +53,12 @@ class DialogMessage(Model):
     sender_id: int
     dialog_id: int
     id: int = None
+    status: int = None
     created_at: Date = None
+
+    @property
+    def is_read(self):
+        return self.status != 0
 
 
 @dataclass

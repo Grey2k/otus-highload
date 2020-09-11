@@ -43,6 +43,15 @@ class BaseRepo(ABC):
         row = self.db.query(sql, (value,)).fetchone()
         return self.model_class(**row) if row else None
 
+    def _find_by_attribute(self, attr, value):
+        query = f'''
+           SELECT * from `{self.table_name}`
+           WHERE {attr} = %s
+        '''
+        with self.db.cursor() as cursor:
+            cursor.execute(query, (value,))
+            return [self.model_class(**row) for row in cursor.fetchall()]
+
     def save(self, entity: Model):
         if not entity.id:
             return self._add(entity)
@@ -143,14 +152,14 @@ class DialogMessagesRepo(BaseRepo):
     table_name = 'dialogs_messages'
     model_class = DialogMessage
 
-    def find_by_dialog(self, dialog_id):
+    def find_by_dialog(self, dialog_id, profile_id):
         query = f'''
-           SELECT * from `{self.table_name}`
-           WHERE dialog_id = %(dialog_id)s
-           ORDER BY id ASC
+           SELECT dm.*, ms.status from `{self.table_name}` as dm
+           LEFT JOIN {MessageStatusRepo.table_name} ms on dm.id = ms.message_id and ms.recepient_id=%s 
+           WHERE dialog_id = %s
         '''
         with self.db.cursor() as cursor:
-            cursor.execute(query, {'dialog_id': dialog_id})
+            cursor.execute(query, (profile_id, dialog_id))
             return [self.model_class(**row) for row in cursor.fetchall()]
 
 

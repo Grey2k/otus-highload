@@ -19,26 +19,31 @@ def resource(dto: ResourceDto):
 
 class DialogListDto(ResourceDto):
 
-    def __init__(self, profile_id, dialogs: List[Dialog]):
+    def __init__(self, profile_id, dialogs: List[Dialog], counters: dict):
         self.profile_id = profile_id
         self.dialogs = dialogs
+        self.counters = counters
 
     def as_dict(self):
         return {
-            'items': [DialogDto(self.profile_id, dialog).as_dict() for dialog in self.dialogs]
+            'items': [
+                DialogDto(self.profile_id, dialog, self.counters.get(str(dialog.id))).as_dict()
+                for dialog in self.dialogs]
         }
 
 
 class DialogDto(ResourceDto):
 
-    def __init__(self, profile_id, dialog: Dialog):
+    def __init__(self, profile_id, dialog: Dialog, unread_count: int = None):
         self.profile_id = profile_id
         self.dialog = dialog
+        self.unread_count = unread_count
 
     def as_dict(self):
         return {
             'id': self.dialog.id,
-            'name': self.dialog.name(self.profile_id)
+            'name': self.dialog.name(self.profile_id),
+            'unread_count': self.unread_count
         }
 
 
@@ -52,6 +57,7 @@ class MessageDto(ResourceDto):
             'text': self.message.text,
             'created_at': self.message.created_at,
             'sender_id': self.message.sender_id,
+            'is_read': self.message.is_read,
         }
 
 
@@ -88,4 +94,14 @@ class CreatedDto(ResourceDto):
         return {
             'success': True,
             'id': self.entity.id
+        }
+
+
+class SuccessDto(ResourceDto):
+    def __init__(self, status):
+        self.status = status
+
+    def as_dict(self):
+        return {
+            'success': self.status,
         }
