@@ -16,12 +16,6 @@ class Model:
 
 
 @dataclass
-class City(Model):
-    name: str
-    id: int = None
-
-
-@dataclass
 class Profile(Model):
     first_name: str
     last_name: str
