@@ -26,6 +26,7 @@ services:
       NOTIFICATIONS_BROKER: ${NOTIFICATIONS_BROKER}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       CHAT_SERVICE_URL: ${CHAT_SERVICE_URL}
+      COUNTERS_API_URL: ${COUNTERS_API_URL}
     volumes:
       - "./logs:/usr/src/logs"
       - "./app:/usr/src/app"
@@ -236,12 +237,39 @@ services:
       DIALOGS_DB_PASSWORD: ${DIALOGS_DB_PASSWORD}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       CHAT_SERVICE_URL: ${CHAT_SERVICE_URL}
+      COUNTERS_API_URL: ${COUNTERS_API_URL}
     volumes:
       - "./app_dialogs/app:/usr/src/app"
     networks:
       - shared
     ports:
       - ${DIALOGS_APP_PUBLIC_PORT}:8000
+
+  counters-db:
+    image: redis:latest
+    restart: always
+    container_name: counters-db
+    volumes:
+      - ./volumes/counters-db/:/data
+    networks:
+      - shared
+
+  counters-app:
+    build: ./app_counters
+    container_name: counters-app
+    restart: always
+    environment:
+      FLASK_APP: cli_app.py
+      ENV: ${ENV}
+      SECRET_KEY: ${SECRET_KEY}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      REDIS_URL: ${COUNTERS_REDIS_URL}
+    volumes:
+      - "./app_counters/app:/usr/src/app"
+    networks:
+      - shared
+    ports:
+      - ${COUNTERS_APP_PUBLIC_PORT}:8000
 
 networks:
   shared:
