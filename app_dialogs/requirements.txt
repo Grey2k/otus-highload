@@ -15,4 +15,5 @@ tarantool
 celery
 redis
 blinker
+requests
 pika
