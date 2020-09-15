@@ -55,7 +55,7 @@ export default {
     loadChat: async function (chatId) {
       this.loading = true;
       //todo: сделать клиента для api-чатов
-      const response = await fetch(this.chatUrl + chatId, {
+      const response = await fetch(this.chatUrl + '/v1/' + chatId, {
         headers: {
           'Authorization': 'JWT ' + get_cookie('auth_token'),
         }
@@ -75,7 +75,7 @@ export default {
         return;
       }
       //todo: сделать клиента для api-чатов
-      const request = fetch(this.chatUrl + this.chatId, {
+      const request = fetch(this.chatUrl + '/v1/' + this.chatId, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -93,7 +93,7 @@ export default {
       await request;
     },
     readMessage: function (message) {
-      fetch(this.chatUrl + this.chatId + '/' + message.id, {
+      fetch(this.chatUrl + '/v1/' + this.chatId + '/' + message.id, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

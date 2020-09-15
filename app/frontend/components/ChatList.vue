@@ -37,7 +37,7 @@ export default {
     },
     loadChats: async function () {
       //todo: сделать клиента для api-чатов
-      const response = await fetch(this.chatListUrl, {
+      const response = await fetch(this.chatListUrl + '/v1/', {
         headers: {
           'Authorization': 'JWT ' + get_cookie('auth_token'),
         }

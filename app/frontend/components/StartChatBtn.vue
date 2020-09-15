@@ -23,7 +23,7 @@ export default {
     startChat: async function () {
       this.loading = true;
 
-      const response = await fetch(this.chatUrl, {
+      const response = await fetch(this.chatUrl + '/v1/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
