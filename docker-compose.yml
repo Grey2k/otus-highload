@@ -27,6 +27,8 @@ services:
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       CHAT_SERVICE_URL: ${CHAT_SERVICE_URL}
       COUNTERS_API_URL: ${COUNTERS_API_URL}
+      CONSUL_HOST: ${CONSUL_HOST}
+      CONSUL_PORT: ${CONSUL_PORT}
     volumes:
       - "./logs:/usr/src/logs"
       - "./app:/usr/src/app"
@@ -225,6 +227,7 @@ services:
   dialogs-app:
     build: ./app_dialogs
     container_name: dialogs-app
+    hostname: dialogs-app
     restart: always
     environment:
       FLASK_APP: cli_app.py
@@ -238,12 +241,44 @@ services:
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       CHAT_SERVICE_URL: ${CHAT_SERVICE_URL}
       COUNTERS_API_URL: ${COUNTERS_API_URL}
+      CONSUL_HOST: ${CONSUL_HOST}
+      CONSUL_PORT: ${CONSUL_PORT}
+      APP_PORT: ${DIALOGS_APP_PUBLIC_PORT}
+      APP_HOST: ${DIALOGS_APP_PUBLIC_HOST}
     volumes:
       - "./app_dialogs/app:/usr/src/app"
     networks:
       - shared
     ports:
       - ${DIALOGS_APP_PUBLIC_PORT}:8000
+
+  dialogs-app2:
+    build: ./app_dialogs
+    container_name: dialogs-app2
+    hostname: dialogs-app2
+    restart: always
+    environment:
+      FLASK_APP: cli_app.py
+      ENV: ${ENV}
+      SECRET_KEY: ${SECRET_KEY}
+      DIALOGS_DB: ${DIALOGS_DB}
+      DIALOGS_DB_PORT: ${DIALOGS_DB_PORT}
+      DIALOGS_DB_DATABASE: ${DIALOGS_DB_DATABASE}
+      DIALOGS_DB_USER: ${DIALOGS_DB_USER}
+      DIALOGS_DB_PASSWORD: ${DIALOGS_DB_PASSWORD}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      CHAT_SERVICE_URL: ${CHAT_SERVICE_URL}
+      COUNTERS_API_URL: ${COUNTERS_API_URL}
+      CONSUL_HOST: ${CONSUL_HOST}
+      CONSUL_PORT: ${CONSUL_PORT}
+      APP_PORT: ${DIALOGS_APP_PUBLIC_PORT2}
+      APP_HOST: ${DIALOGS_APP_PUBLIC_HOST2}
+    volumes:
+      - "./app_dialogs/app:/usr/src/app"
+    networks:
+      - shared
+    ports:
+      - ${DIALOGS_APP_PUBLIC_PORT2}:8000
 
   counters-db:
     image: redis:latest
@@ -270,6 +305,15 @@ services:
       - shared
     ports:
       - ${COUNTERS_APP_PUBLIC_PORT}:8000
+
+  consul:
+    image: consul
+    container_name: consul
+    hostname: localhost
+    networks:
+      - shared
+    ports:
+      - 8500:8500
 
 networks:
   shared:
