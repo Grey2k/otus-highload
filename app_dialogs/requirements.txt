@@ -16,4 +16,5 @@ celery
 redis
 blinker
 requests
+flask-consulate
 pika

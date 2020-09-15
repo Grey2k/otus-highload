@@ -4,6 +4,7 @@ import os
 from flask import Flask
 from flask_injector import FlaskInjector
 
+from app.council import register_services
 from app.database.db import init_db
 from app.di import configure_di
 from app.jwt import jwt, init_jwt
@@ -15,6 +16,7 @@ def create_app(env="production"):
     init_jwt(app)
     init_db(app)
     init_routes(app)
+    register_services(app)
 
     injector = FlaskInjector(app=app, modules=[configure_di(app)])
     app.di = injector.injector
