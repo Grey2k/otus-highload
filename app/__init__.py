@@ -38,6 +38,9 @@ def create_app(env="production"):
     init_template_filters(app)
     init_tasks()
 
+    from app.service_discovery import init_discovery
+    init_discovery(app)
+
     return app
 
 

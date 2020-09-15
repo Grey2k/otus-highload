@@ -6,6 +6,7 @@ from app.database.db import pool
 from app.database.repositories import CityRepo, UserRepo, ProfileRepo, FriendRepo, PostsRepo, SubscribersRepo
 from app.feed.providers import FeedProvider, TarantoolFeedProvider
 from app.feed.services import Publisher
+from app.service_discovery import ServiceDiscovery, consul
 from app.tarantool.repositories import TarantoolProfilesRepo
 from app.tarantool.tarantool import tarantool
 
@@ -22,6 +23,8 @@ def configure_di(binder):
     binder.bind(PostsRepo, to=PostsRepo(pool), scope=singleton)
     binder.bind(SubscribersRepo, to=SubscribersRepo(pool), scope=singleton)
     binder.bind(Publisher, to=Publisher('feed_exchange', publisher), scope=singleton)
+
+    binder.bind(ServiceDiscovery, to=ServiceDiscovery(consul=consul), scope=singleton)
 
 
 def get(service):
